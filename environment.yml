@@ -2,7 +2,7 @@ name: TSandLang
 channels:
   - conda-forge
   - defaults
-  - pytorch
+  - pytorch=2.0.1
   - nvidia
 dependencies:
   - pip
@@ -13,7 +13,7 @@ dependencies:
   - pandas
   - scikit-learn
   - scipy
-  - torchvision
+  - torchvision=0.15.2
   - pytorch-cuda=12.1
   - matplotlib
   - lightning
@@ -27,6 +27,6 @@ dependencies:
     - wandb 
     - openai
     - jsonargparse[all]
-    - torchaudio
+    - torchaudio==2.0.2
 variables:
   USE_TORCH: 1
