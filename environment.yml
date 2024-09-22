@@ -2,11 +2,12 @@ name: TSandLang
 channels:
   - conda-forge
   - defaults
-  - pytorch=2.0.1
+  - pytorch
   - nvidia
 dependencies:
   - pip
   - python=3.10
+  - pytorch=2.0.1
   - click=7.1
   - python-dotenv>=0.5.1
   - numpy
