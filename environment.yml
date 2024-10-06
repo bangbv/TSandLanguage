@@ -26,7 +26,7 @@ dependencies:
     - seaborn
     - git+https://github.com/haotian-liu/LLaVA@a0bdc71
     - wandb 
-    - openai
+    - openai==0.28.1
     - jsonargparse[all]
     - torchaudio==2.0.2
 variables:

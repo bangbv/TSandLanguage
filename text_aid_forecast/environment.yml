@@ -1,4 +1,4 @@
-name: TSandLang
+name: TSandLangContext
 channels:
   - conda-forge
   - defaults
@@ -24,7 +24,6 @@ dependencies:
   - tqdm
   - omegaconf
   - hydra-core
-  - pickle
   - pip:
     - einops
     - seaborn
