@@ -16,7 +16,6 @@ def run(config: DictConfig):
     print(f"Running with config: {config}")
     datasets = get_datasets(config)
     print('Number of datasets:' , len(datasets))
-    exit()
     model = load_model_by_name(config)
 
     num_samples = 20 if 'gpt' in config.model.name else 96
