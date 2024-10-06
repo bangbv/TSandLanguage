@@ -1,11 +1,13 @@
+import os , sys
+# print('utils path', sys.path)
 from tsllm.models.gpt import GPTmodel
 from tqdm import tqdm
 
 import numpy as np 
 import pandas as pd
 
-import os , sys 
-sys.path.append(os.path.abspath('../../../'))
+ts_path = '/Users/bangbui/workspace/TSandLanguage/'
+sys.path.append(os.path.abspath(ts_path))
 from  src.data.serialize import  deserialize_str , ori_scale_deserialize
 
 '''

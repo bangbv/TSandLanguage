@@ -8,7 +8,8 @@ def get_datasets(config):
 def get_datasets(config,testfrac=0.2 ):
     # v2.jsonl is the dataset you download. It may have other names. 
     # Please put your dataset under target Path : config.experiment.data_path
-    data_list = pd.read_json(os.path.join(config.experiment.data_path ,'v2.jsonl' ), lines=True)
+    print(f"config.experiment.data_path: {config.experiment.data_path}")
+    data_list = pd.read_json(os.path.join(config.experiment.data_path ,'TS_Dataset.jsonl' ), lines=True)
     datas = []
     data_indexs =[]
     for _, row in data_list.iterrows():    
