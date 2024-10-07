@@ -1,14 +1,12 @@
 import hydra
 from omegaconf import DictConfig
 import os , sys
-from tsllm.models.utils import load_model_by_name , get_predict_results
-from tsllm.datasets import get_datasets
-from tsllm.pre_processing import pre_processing
+from tsllm.models.utils_2 import load_model_by_name , get_predict_results
+from tsllm.datasets_2 import get_datasets
+from tsllm.pre_processing_2 import pre_processing
 import os , pickle , time
 
-ts_path = '/Users/bangbui/workspace/TSandLanguage/'
-sys.path.append(os.path.abspath(ts_path))
-from src.data.token_utils import build_save_path  , is_completion
+from tsllm.token_utils import build_save_path  , is_completion
 
 
 @hydra.main(config_path="config", config_name="config", version_base="1.2")
@@ -23,7 +21,7 @@ def run(config: DictConfig):
 
     scalers = None
     save_dir = build_save_path(config)
-
+    print(f"Save dir: {save_dir}")
     for dsname,data in datasets.items():
         if is_completion(save_dir , dsname ) : continue
         outs_dict = {}
@@ -33,6 +31,7 @@ def run(config: DictConfig):
         print(input_strs)
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
+            # print(f"The result {out}")
             outs_dict[config.model.name] = out
         except Exception as e:
             print(f"Failed {dsname} {config.model.name}" + str(e) )

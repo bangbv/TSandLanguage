@@ -6,5 +6,5 @@ defaults:
 tags: ~
 device: "cuda:0" 
 scale_size: 0 
-output_dir : './outputs'
+output_dir : './outputs/2024-10-06'
 is_test_context_length: False 
