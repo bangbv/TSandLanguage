@@ -25,7 +25,7 @@ class GPTmodel(torch.nn.Module):
     def run(self , input_str , description , steps, batch_size, num_samples , temp ):
         
         if self.task == 'forecast': 
-            return self.forecast(input_str  , description  , steps  , num_samples, temp)
+            return self.forecast_2(input_str  , description  , steps  , num_samples, temp)
         
     def forecast(self, input_str  , description  , steps  , num_samples, temp):
         """
@@ -55,6 +55,39 @@ class GPTmodel(torch.nn.Module):
             temperature=temp,
             logit_bias=logit_bias,
             n=num_samples, # Generate num_samples different time series to help get an average.
+        )
+        return [choice.message.content for choice in response.choices]
+
+    def forecast_2(self, input_str, description, steps, num_samples, temp):
+        """
+        num_samples: Generate num_samples different time series to help get an average.
+        steps : prediction length
+        Generate text completions from GPT using OpenAI's API.
+        """
+
+        #  To prevent GPTs from producing unwanted tokens
+        #  What is allowed : ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '-']
+        avg_tokens_per_step = len(self.tokenize_fn(input_str, self.model_name)) / len(
+            input_str.split(self.settings['time_sep']))
+        logit_bias = self.get_logit_bias()
+        chain_of_thought = "Let's think step by step."
+        chatgpt_sys_message = "You are a helpful assistant that performs time series predictions. The user will provide a sequence and you will predict the remaining sequence. The sequence is represented by decimal strings separated by commas."
+        if description != '':
+            description = "This is the description of the time series you are predicting. Understanding it will help with your prediction: " + description
+        extra_input = "Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n"
+
+        response = openai.ChatCompletion.create(
+            model=self.model_name,
+            # model='gpt4-1106',
+            # deployment_id=DEPLOYMENT,
+            messages=[
+                {"role": "system", "content": chain_of_thought + chatgpt_sys_message},
+                {"role": "user", "content": description + extra_input + input_str + self.settings['time_sep']}
+            ],
+            max_tokens=int(avg_tokens_per_step * steps),
+            temperature=temp,
+            logit_bias=logit_bias,
+            n=num_samples,  # Generate num_samples different time series to help get an average.
         )
         return [choice.message.content for choice in response.choices]
         
