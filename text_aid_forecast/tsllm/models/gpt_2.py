@@ -114,7 +114,9 @@ class GPTmodel(torch.nn.Module):
             list of int: List of corresponding token IDs.
         """
         encoding = tiktoken.encoding_for_model(model)
-        return encoding.encode(str)
+        encoding_result = encoding.encode(str)
+        print(f"encoding result: {encoding_result}")
+        return encoding_result
 
     def get_allowed_ids(self, strs, model):
         """

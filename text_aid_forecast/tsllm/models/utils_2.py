@@ -6,6 +6,7 @@ import pandas as pd
 
 import os , sys
 from  tsllm.serialize import  deserialize_str , ori_scale_deserialize
+import tsllm.models.fourier_transforms as ft
 
 '''
     Note that : 
@@ -52,10 +53,15 @@ def get_predict_results(model , input_strs  , test, describtion,
 
             #  Ensure the forecasting output length matches the ground-truth length.
             pred = handle_prediction(deserialized_pred , expected_length=config.model.test_len, strict=False)
-            
+            print(f"get_predict_results pred: {pred}")
+
             # If there is a rescaling operation, restore the scale.
-            if (pred is not None) and (scaler is not None)  : 
-                preds.append(scaler.inv_transform(pred))
+            if (pred is not None) and (scaler is not None)  :
+                pred = scaler.inv_transform(pred)
+                print(f"inv_transform pred: {pred}")
+                pred = ft.inverse_fourier_transform(pred)
+                print(f"inverse_fourier_transform pred: {pred}")
+                preds.append(pred)
             else :
                 preds.append(pred)
                 

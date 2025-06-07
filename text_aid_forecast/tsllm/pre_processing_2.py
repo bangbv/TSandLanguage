@@ -4,7 +4,8 @@ from tsllm.token_utils import get_scaler , truncate_input
 from tsllm.serialize import serialize_arr , ori_scale_serialize
 from omegaconf import open_dict
 import pandas as pd
-import numpy as np 
+import numpy as np
+import tsllm.models.fourier_transforms as ft
     
 def pre_processing(train, test, describtion  , config , tokenizer  ):
     if 'rescale' in config.experiment.preprocess : 
@@ -60,6 +61,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer ):
     '''
     
     transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
+    print(f"original transformed_input_arrs: {transformed_input_arrs}")
     '''
         Shift the decimal point to ensure that values after rescaling fall within the 0-2000 range as much as possible.
          
@@ -68,6 +70,8 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer ):
             1.05070799  -> [0 0 0 ...1 0 5 0] -> 1050
         input_strs: ['627, 661, 739, 723,....']
     '''
+    transformed_input_arrs = ft.fourier_transform(transformed_input_arrs)
+    print(f"fourier_transform transformed_input_arrs: {transformed_input_arrs}")
     input_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs]
     truncated_input_arr, truncated_input_str = zip(*[truncate_input(input_array, input_str, describtion, config , tokenizer ) for input_array, input_str ,describtion in zip(input_arrs, input_strs , describtions )])
 

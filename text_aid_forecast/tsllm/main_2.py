@@ -26,9 +26,9 @@ def run(config: DictConfig):
         if is_completion(save_dir , dsname ) : continue
         outs_dict = {}
         train, test , description= data
-        print(train , ' -- tes tLen:' , len(test) )
+        # print(train , ' -- tes tLen:' , len(test) )
         _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer )
-        print(input_strs)
+        # print(input_strs)
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
             # print(f"The result {out}")
@@ -40,4 +40,7 @@ def run(config: DictConfig):
             pickle.dump(outs_dict,f)
 
 if __name__ == "__main__":
+    # config = { "experiment" : "llmtime_wi_all_2" , "model" : "gpt-4" }
+    # dictConfig = DictConfig(config)
+    # run(dictConfig)
     run()
