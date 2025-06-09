@@ -2,14 +2,23 @@ import tiktoken
 import numpy as np
 import torch 
 import openai
-import os 
+import os
+
 openai.api_key = os.environ['OPENAI_API_KEY']
 openai.api_base = os.environ["OPENAI_API_BASE"]
 
 # openai.api_version = "2023-09-01-preview"
 # openai.api_type = "azure"
 # DEPLOYMENT = "gpt-4"
-    
+
+def print_debug(f, header, value, debug_mode=False):
+    if debug_mode: f(header, value)
+
+
+def my_print(header, value):
+    print(f"{header}: {value}")
+
+
 class GPTmodel(torch.nn.Module):
     '''
         Note that : 
@@ -20,6 +29,7 @@ class GPTmodel(torch.nn.Module):
         self.task = config.experiment.task 
         self.settings  = config.model.settings
         self.model_name = config.model.name
+        self.debug_mode = config.debug_mode
         self.tokenizer = None 
         
     def run(self , input_str , description , steps, batch_size, num_samples , temp ):
@@ -42,7 +52,6 @@ class GPTmodel(torch.nn.Module):
         if description != '' : 
             description = "This is the description of the time series you are predicting. Understanding it will help with your prediction: " + description 
         extra_input = "Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n"
-        
         response = openai.ChatCompletion.create(
             model=self.model_name,
             # model='gpt4-1106',
@@ -75,7 +84,6 @@ class GPTmodel(torch.nn.Module):
         if description != '':
             description = "This is the description of the time series you are predicting. Understanding it will help with your prediction: " + description
         extra_input = "Please continue the following sequence without producing any additional text. Do not say anything like 'the next terms in the sequence are', just return the numbers. Sequence:\n"
-
         response = openai.ChatCompletion.create(
             model=self.model_name,
             # model='gpt4-1106',
@@ -89,7 +97,10 @@ class GPTmodel(torch.nn.Module):
             logit_bias=logit_bias,
             n=num_samples,  # Generate num_samples different time series to help get an average.
         )
-        return [choice.message.content for choice in response.choices]
+
+        # Extract the content from the response
+        result = [choice.message.content for choice in response.choices]
+        return result
         
     def get_logit_bias(self):
         # define logit bias to prevent GPT from producing unwanted tokens
@@ -113,9 +124,10 @@ class GPTmodel(torch.nn.Module):
         Returns:
             list of int: List of corresponding token IDs.
         """
+        debug_mode = self.debug_mode
         encoding = tiktoken.encoding_for_model(model)
         encoding_result = encoding.encode(str)
-        print(f"encoding result: {encoding_result}")
+        print_debug(my_print, "GPTmodel: tokenize_fn: encoding result:", encoding_result[:3], debug_mode)
         return encoding_result
 
     def get_allowed_ids(self, strs, model):
@@ -136,5 +148,3 @@ class GPTmodel(torch.nn.Module):
             id = encoding.encode(s)
             ids.extend(id)
         return ids
-        
-    

@@ -35,12 +35,14 @@ def get_output_format(preds , test , results_list , model_name , input_strs ):
     }
     return out_dict
 
-def get_predict_results(model , input_strs  , test, describtion,  
-                        config, batch_size, num_samples, scalers=None  ):
+def get_predict_results(model , input_strs  , test, description,
+                        config, batch_size, num_samples, scalers=None ):
+    debug_node = config.debug_mode
     results_list = []
     batch_preds = []
     for input_str in tqdm(input_strs):
-        res = model.run(input_str , describtion , config.model.test_len*STEP_MULTIPLIER , batch_size ,num_samples , config.model.temp ) 
+        res = model.run(input_str , description , config.model.test_len*STEP_MULTIPLIER , batch_size ,num_samples , config.model.temp )
+        print_debug(my_print, "utils: get_predict_results: res", res[:3], debug_node)
         results_list.append(res)
     for completions, scaler in zip(results_list, scalers):
         preds = []
@@ -52,15 +54,16 @@ def get_predict_results(model , input_strs  , test, describtion,
                 deserialized_pred = ori_scale_deserialize(completion)
 
             #  Ensure the forecasting output length matches the ground-truth length.
-            pred = handle_prediction(deserialized_pred , expected_length=config.model.test_len, strict=False)
-            print(f"get_predict_results pred: {pred}")
-
+            pred = handle_prediction(deserialized_pred , expected_length=config.model.test_len, strict=False) #
+            print_debug(my_print, "utils: get_predict_results: pred", pred[0][:3], debug_node)
             # If there is a rescaling operation, restore the scale.
             if (pred is not None) and (scaler is not None)  :
                 pred = scaler.inv_transform(pred)
-                print(f"inv_transform pred: {pred}")
-                pred = ft.inverse_fourier_transform(pred)
-                print(f"inverse_fourier_transform pred: {pred}")
+                print_debug(my_print, "utils: get_predict_results: inv_transform: pred", pred[0][:3], debug_node)
+                if(config.is_fourier):
+                    # If the model is trained with Fourier transform, we need to inverse the Fourier transform.
+                    pred = ft.inverse_fourier_transform(pred)
+                    print(f"inverse_fourier_transform pred: {pred}")
                 preds.append(pred)
             else :
                 preds.append(pred)
@@ -96,3 +99,10 @@ def handle_prediction(pred, expected_length, strict=False):
                 return np.concatenate([pred, np.full(expected_length - len(pred), pred[-1])])
         else:
             return pred[:expected_length]
+
+
+def print_debug(f, header, value, debug_mode = False):
+    if debug_mode : f(header, value)
+
+def my_print(header, value):
+    print(f"{header}: {value}")

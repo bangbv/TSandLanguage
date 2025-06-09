@@ -7,4 +7,7 @@ tags: ~
 device: "cuda:0" 
 scale_size: 0 
 output_dir : './outputs/2024-12-07'
-is_test_context_length: False 
+is_test_context_length: False
+is_fourier: False
+debug_mode: True
+is_reason: True

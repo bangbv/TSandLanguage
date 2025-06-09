@@ -7,13 +7,16 @@ from tsllm.pre_processing_2 import pre_processing
 import os , pickle , time
 
 from tsllm.token_utils import build_save_path  , is_completion
+from tsllm.models.utils_2 import print_debug, my_print
 
 
 @hydra.main(config_path="config", config_name="config", version_base="1.2")
 def run(config: DictConfig):
-    print(f"Running with config: {config}")
+    debug_mode = config.debug_mode
+    is_fourier = config.is_fourier
+    print_debug(my_print, "Running with config", config, debug_mode)
     datasets = get_datasets(config)
-    print('Number of datasets:' , len(datasets))
+    print_debug(my_print, "Length of datasets:", len(datasets), debug_mode)
     model = load_model_by_name(config)
 
     num_samples = 20 if 'gpt' in config.model.name else 96
@@ -21,13 +24,13 @@ def run(config: DictConfig):
 
     scalers = None
     save_dir = build_save_path(config)
-    print(f"Save dir: {save_dir}")
+    print_debug(my_print, "Save dir:", len(datasets), debug_mode)
     for dsname,data in datasets.items():
         if is_completion(save_dir , dsname ) : continue
         outs_dict = {}
         train, test , description= data
         # print(train , ' -- tes tLen:' , len(test) )
-        _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer )
+        _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
         # print(input_strs)
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
