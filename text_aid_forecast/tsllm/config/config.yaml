@@ -11,3 +11,4 @@ is_test_context_length: False
 is_fourier: False
 debug_mode: True
 is_reason: True
+is_test_mode: True

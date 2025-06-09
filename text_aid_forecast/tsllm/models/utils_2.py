@@ -42,33 +42,42 @@ def get_predict_results(model , input_strs  , test, description,
     batch_preds = []
     for input_str in tqdm(input_strs):
         res = model.run(input_str , description , config.model.test_len*STEP_MULTIPLIER , batch_size ,num_samples , config.model.temp )
-        print_debug(my_print, "utils: get_predict_results: res", res[:3], debug_node)
+        print_debug(my_print, "utils: get_predict_results: run: res", res[:3], debug_node)
         results_list.append(res)
+
+    print_debug(my_print, "utils: get_predict_results: results_list length",
+                len(results_list), debug_node)
+    print_debug(my_print, "utils: get_predict_results: results_list first three completions",results_list[0][:3], debug_node)
     for completions, scaler in zip(results_list, scalers):
         preds = []
         for completion in completions:
+            print_debug(my_print,
+                        "utils: get_predict_results: completion",
+                        completion[:3], debug_node)
             # Convert the output string to a numpy array. 
             if scaler is not None :
-                deserialized_pred = deserialize_str(completion, config.model.settings, ignore_last=False, steps=config.model.test_len)
+                deserialized_pred = deserialize_str(completion, config.model.settings, ignore_last=False, steps=config.model.test_len) # explain this line code
             else :
                 deserialized_pred = ori_scale_deserialize(completion)
-
+            print_debug(my_print,
+                        "utils: get_predict_results: deserialized_pred",
+                        deserialized_pred[:3], debug_node)
             #  Ensure the forecasting output length matches the ground-truth length.
             pred = handle_prediction(deserialized_pred , expected_length=config.model.test_len, strict=False) #
-            print_debug(my_print, "utils: get_predict_results: pred", pred[0][:3], debug_node)
+            print_debug(my_print, "utils: get_predict_results: handle_prediction: pred", pred[:3], debug_node)
             # If there is a rescaling operation, restore the scale.
             if (pred is not None) and (scaler is not None)  :
                 pred = scaler.inv_transform(pred)
-                print_debug(my_print, "utils: get_predict_results: inv_transform: pred", pred[0][:3], debug_node)
+                print_debug(my_print, "utils: get_predict_results: inv_transform: pred", pred[:3], debug_node)
                 if(config.is_fourier):
                     # If the model is trained with Fourier transform, we need to inverse the Fourier transform.
                     pred = ft.inverse_fourier_transform(pred)
-                    print(f"inverse_fourier_transform pred: {pred}")
+                    print(f"utils: get_predict_results: inverse_fourier_transform pred: {pred}")
                 preds.append(pred)
             else :
                 preds.append(pred)
                 
-        # The batch_size here is 1, preds contian 20 predicted results 
+        # The batch_size here is 1, preds contain 20 predicted results
         batch_preds.append(preds)
         
     # Package the results

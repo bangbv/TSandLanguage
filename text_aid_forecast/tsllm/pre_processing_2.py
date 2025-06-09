@@ -77,7 +77,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     '''
 
     input_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs] # convert np.array to str
-    print_debug(my_print, "rescale_pre_processing: input_strs:", input_strs[0].split(',')[:3], debug_node)
+    print_debug(my_print, "rescale_pre_processing: serialize_arr:input_strs:", input_strs[0].split(',')[:3], debug_node)
     truncated_input_arr, truncated_input_str = zip(*[truncate_input(input_array, input_str, describtion, config , tokenizer ) for input_array, input_str ,describtion in zip(input_arrs, input_strs , describtions )]) # truncate input to fit the model's maximum context length
     print_debug(my_print, "rescale_pre_processing: truncated_input_str:", truncated_input_str[0].split(',')[:3], debug_node)
     return truncated_input_arr, truncated_input_str , scalers , test

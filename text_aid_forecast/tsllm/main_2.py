@@ -13,7 +13,7 @@ from tsllm.models.utils_2 import print_debug, my_print
 @hydra.main(config_path="config", config_name="config", version_base="1.2")
 def run(config: DictConfig):
     debug_mode = config.debug_mode
-    is_fourier = config.is_fourier
+    is_test_mode = config.is_test_mode
     print_debug(my_print, "Running with config", config, debug_mode)
     datasets = get_datasets(config)
     print_debug(my_print, "Length of datasets:", len(datasets), debug_mode)
@@ -26,7 +26,7 @@ def run(config: DictConfig):
     save_dir = build_save_path(config)
     print_debug(my_print, "Save dir:", len(datasets), debug_mode)
     for dsname,data in datasets.items():
-        if is_completion(save_dir , dsname ) : continue
+        if is_completion(save_dir , dsname, is_test_mode) : continue
         outs_dict = {}
         train, test , description= data
         # print(train , ' -- tes tLen:' , len(test) )
