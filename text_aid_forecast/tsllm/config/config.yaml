@@ -8,7 +8,7 @@ device: "cuda:0"
 scale_size: 0 
 output_dir : './outputs/2024-12-07'
 is_test_context_length: False
-is_fourier: False
+is_fourier: True
 debug_mode: True
 is_reason: True
 is_test_mode: True

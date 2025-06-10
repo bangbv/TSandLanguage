@@ -34,7 +34,7 @@ def run(config: DictConfig):
         # print(input_strs)
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
-            # print(f"The result {out}")
+            print(f"main:run: the result {out}")
             outs_dict[config.model.name] = out
         except Exception as e:
             print(f"Failed {dsname} {config.model.name}" + str(e) )

@@ -12,16 +12,24 @@ def fourier_transform(arr_signals):
 
 
 def inverse_fourier_transform(arr_fft_values):
-    arr_reconstructed_signals = []
+    arr_reconstructed_signals = list()
     try:
-        for fft_values in arr_fft_values:
-            print(f"fft_values: {fft_values}")
-            # Compute the inverse FFT
-            reconstructed_signal = ifft(fft_values)
-            print(f"reconstructed_signal: {reconstructed_signal}")
-            reconstructed_signal = np.abs(reconstructed_signal.real)
-            arr_reconstructed_signals.append(reconstructed_signal)
-            print(f"reconstructed_signal: {reconstructed_signal}")
+        # Compute the inverse FFT
+        reconstructed_signal = ifft(arr_fft_values)
+        reconstructed_signal = np.abs(reconstructed_signal.real)
+        arr_reconstructed_signals.append(reconstructed_signal)
     except Exception as e:
-        print(f"Error in inverse_fourier_transform: {e}")
-    return arr_reconstructed_signals
+        print(f"inverse_fourier_transform: error: {e}")
+        print(f"inverse_fourier_transform: data shape: {arr_fft_values}")
+        return None
+    return arr_reconstructed_signals[0].tolist()
+
+
+if __name__ == "__main__":
+    # Example usage
+    # [8.0845, -0.0695]
+    arr_fft_values = [2, 1]
+    print(f"type of arr_fft_values: {type(arr_fft_values)}")
+    arr_reconstructed_signals = inverse_fourier_transform(arr_fft_values)
+    print(f"type of arr_reconstructed_signals: {type(arr_reconstructed_signals)}")
+    print(f"Reconstructed Signals: {arr_reconstructed_signals}")
