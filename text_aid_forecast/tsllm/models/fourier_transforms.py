@@ -4,7 +4,7 @@ from scipy.fftpack import fft, ifft
 
 def fourier_transform(arr_signals):
     # Compute the FFT (Fast Fourier Transform)
-    arr_fft_values = []
+    arr_fft_values: list = []
     for signal in arr_signals:
         fft_values = fft(signal)
         arr_fft_values.append(fft_values)
@@ -12,17 +12,15 @@ def fourier_transform(arr_signals):
 
 
 def inverse_fourier_transform(arr_fft_values):
-    arr_reconstructed_signals = list()
     try:
         # Compute the inverse FFT
         reconstructed_signal = ifft(arr_fft_values)
         reconstructed_signal = np.abs(reconstructed_signal.real)
-        arr_reconstructed_signals.append(reconstructed_signal)
     except Exception as e:
         print(f"inverse_fourier_transform: error: {e}")
         print(f"inverse_fourier_transform: data shape: {arr_fft_values}")
         return None
-    return arr_reconstructed_signals[0].tolist()
+    return reconstructed_signal
 
 
 if __name__ == "__main__":
