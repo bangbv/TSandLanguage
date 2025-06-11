@@ -57,11 +57,9 @@ def get_predict_results(model , input_strs  , test, description,
             else :
                 deserialized_pred = ori_scale_deserialize(completion)
             print_debug(my_print,"utils: get_predict_results: deserialized_pred",deserialized_pred, debug_node)
-
             #  Ensure the forecasting output length matches the ground-truth length.
             pred = handle_prediction(deserialized_pred , expected_length=config.model.test_len, strict=False)
             print_debug(my_print, "utils: get_predict_results: handle_prediction: pred", pred[:3], debug_node)
-
             # If there is a rescaling operation, restore the scale.
             if (pred is not None) and (scaler is not None)  :
                 pred = scaler.inv_transform(pred)
@@ -72,6 +70,7 @@ def get_predict_results(model , input_strs  , test, description,
                     print_debug(my_print,"utils:get_predict_results:inverse_fourier_transform:pred",pred, debug_node)
                 preds.append(pred)
             else :
+                print_debug(my_print,"utils: get_predict_results: inv_transform: error pred", pred, debug_node)
                 preds.append(pred)
 
         # The batch_size here is 1, preds contain 20 predicted results
