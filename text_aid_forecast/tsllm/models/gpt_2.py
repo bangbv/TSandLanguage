@@ -36,7 +36,8 @@ class GPTmodel(torch.nn.Module):
         
         if self.task == 'forecast': 
             return self.forecast_2(input_str  , description  , steps  , num_samples, temp)
-        
+        return None
+
     def forecast(self, input_str  , description  , steps  , num_samples, temp):
         """
         num_samples: Generate num_samples different time series to help get an average.

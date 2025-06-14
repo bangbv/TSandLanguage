@@ -11,6 +11,7 @@ def get_datasets(config,testfrac=0.2 ):
     # Please put your dataset under target Path : config.experiment.data_path
     debug_mode = config.debug_mode
     is_test_mode = config.is_test_mode
+    ts_length = config.ts_length
     print_debug(my_print, "config.experiment.data_path", config.experiment.data_path, debug_mode)
     data_list = pd.read_json(os.path.join(config.experiment.data_path ,'TS_Dataset.jsonl' ), lines=True)
     datas = []
@@ -19,7 +20,7 @@ def get_datasets(config,testfrac=0.2 ):
         try:
             series = pd.Series(row['series'])
             if(is_test_mode):
-                series = series.head(10)
+                series = series.head(ts_length)
             print_debug(my_print, "datasets_2: get_datasets: series length", len(series), debug_mode)
             splitpoint = int(len(series)*(1-testfrac))
             train = series.iloc[:splitpoint]
