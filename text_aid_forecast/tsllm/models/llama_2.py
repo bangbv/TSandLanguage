@@ -5,8 +5,6 @@ from transformers import (
     LlamaTokenizer,
 )
 
-from tsllm.models.utils_llama import print_debug, my_print
-
 class LLAMAmodel(torch.nn.Module):
     def __init__(self, config):
         super(LLAMAmodel, self).__init__()
@@ -119,3 +117,9 @@ class LLAMAmodel(torch.nn.Module):
                 clean_up_tokenization_spaces=False
             )
         return gen_strs
+
+def print_debug(f, header, value, debug_mode = False):
+    if debug_mode : f(header, value)
+
+def my_print(header, value):
+    print(f"{header}: {value}")
