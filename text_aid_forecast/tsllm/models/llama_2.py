@@ -5,6 +5,7 @@ from transformers import (
     LlamaTokenizer,
 )
 
+from utils_llama import print_debug, my_print
 
 class LLAMAmodel(torch.nn.Module):
     def __init__(self, config):
@@ -16,18 +17,22 @@ class LLAMAmodel(torch.nn.Module):
         self.DEFAULT_EOS_TOKEN = "</s>"
         self.DEFAULT_BOS_TOKEN = "<s>"
         self.DEFAULT_UNK_TOKEN = "<unk>"
-
         self.loaded = {}
+        self.debug_mode = config.debug_mode
 
     def llama2_model_string(self, model_size, chat):
+        print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
         chat = "chat-" if chat else ""
         return f"meta-llama/Llama-2-{model_size.lower()}-{chat}hf"
 
     def get_tokenizer(self, model_name):
         name_parts = model_name.split("-")
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:name_parts:", name_parts, self.debug_mode)
         model_size = name_parts[0]
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:model_size:", model_size, self.debug_mode)
         chat = len(name_parts) > 1
         assert model_size in ["7b", "13b", "70b"]
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:chat:", chat, self.debug_mode)
 
         tokenizer = LlamaTokenizer.from_pretrained(
             self.llama2_model_string(model_size, chat),
