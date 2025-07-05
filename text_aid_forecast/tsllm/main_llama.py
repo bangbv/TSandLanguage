@@ -2,8 +2,8 @@ import hydra
 from omegaconf import DictConfig
 import os , sys
 from tsllm.models.utils_llama import load_model_by_name , get_predict_results
-from tsllm.datasets_2 import get_datasets
-from tsllm.pre_processing_2 import pre_processing
+from tsllm.datasets_llama import get_datasets
+from tsllm.pre_processing_llama import pre_processing
 import os , pickle , time
 
 from tsllm.token_utils import build_save_path  , is_completion
