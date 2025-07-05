@@ -1,5 +1,5 @@
 from tsllm.models.gpt_2 import GPTmodel
-from tsllm.models.llama import LLAMAmodel
+from tsllm.models.llama_2 import LLAMAmodel
 from tqdm import tqdm
 
 import numpy as np 
