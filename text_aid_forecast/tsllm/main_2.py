@@ -43,7 +43,4 @@ def run(config: DictConfig):
             pickle.dump(outs_dict,f)
 
 if __name__ == "__main__":
-    # config = { "experiment" : "llmtime_wi_all_2" , "model" : "gpt-4" }
-    # dictConfig = DictConfig(config)
-    # run(dictConfig)
     run()
