@@ -21,7 +21,9 @@ class LLAMAmodel(torch.nn.Module):
     def llama2_model_string(self, model_size, chat):
         print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
         chat = "chat-" if chat else ""
-        return f"meta-llama/Llama-2-{model_size.lower()}-{chat}hf"
+        model_string = f"meta-llama/Llama-2-{model_size}-hf"
+        print(f"LLAMAmodel:llama2_model_string:model_string: {model_string}", flush=True)
+        return model_string
 
     def get_tokenizer(self, model_name):
         name_parts = model_name.split("-")

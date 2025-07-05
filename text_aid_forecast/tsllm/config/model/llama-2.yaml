@@ -1,4 +1,4 @@
-name: 'Llama-2-7b-chat-hf'
+name: '7b-chat'
 temp: 1.0     # 0-1 controls the creativity/randomness of the generated text. 1 means very random
 alpha: 0.99   # This is for data preprecssing, scaler.
 beta: 0.3    # This is for data preprecssing, scaler.
