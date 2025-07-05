@@ -5,7 +5,7 @@ from transformers import (
     LlamaTokenizer,
 )
 
-from utils_llama import print_debug, my_print
+from tsllm.models.utils_llama import print_debug, my_print
 
 class LLAMAmodel(torch.nn.Module):
     def __init__(self, config):
