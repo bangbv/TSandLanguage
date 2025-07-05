@@ -21,13 +21,13 @@ def get_datasets(config,testfrac=0.2 ):
             series = pd.Series(row['series'])
             if(is_test_mode):
                 series = series.head(ts_length)
-            print_debug(my_print, "datasets_2: get_datasets: series length", len(series), debug_mode)
+            print_debug(my_print, "datasets_llama: get_datasets: series length", len(series), debug_mode)
             splitpoint = int(len(series)*(1-testfrac))
             train = series.iloc[:splitpoint]
             test  = series.iloc[splitpoint:]
-            print_debug(my_print, "datasets_2: get_datasets: series train length",
+            print_debug(my_print, "datasets_llama: get_datasets: series train length",
                         len(train), debug_mode)
-            print_debug(my_print, "datasets_2: get_datasets: series test length",
+            print_debug(my_print, "datasets_llama: get_datasets: series test length",
                         len(test), debug_mode)
             ts_info =''
             if config.experiment.description_type !='':
