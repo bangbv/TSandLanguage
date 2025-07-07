@@ -21,7 +21,7 @@ class LLAMAmodel(torch.nn.Module):
     def llama2_model_string(self, model_size, chat):
         print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
         chat = "chat-" if chat else ""
-        model_string = f"meta-llama/Llama-2-{model_size}-hf"
+        model_string = f"meta-llama/Llama-2-{model_size.lower()}-{chat}hf"
         print(f"LLAMAmodel:llama2_model_string:model_string: {model_string}", flush=True)
         return model_string
 
