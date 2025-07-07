@@ -15,6 +15,7 @@ import tsllm.models.fourier_transforms as ft
 STEP_MULTIPLIER = 1.2 
     
 def load_model_by_name(config):
+    print_debug(my_print, "utils_llama: load_model_by_name: model name", config.model.name, config.debug_mode)
     if config.model.name in ['llama-7b', 'llama-13b', 'llama-70b', 'llama-7b-chat', 'llama-13b-chat', 'llama-70b-chat']:
         return LLAMAmodel(config=config)
     return None

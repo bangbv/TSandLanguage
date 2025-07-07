@@ -18,7 +18,7 @@ def run(config: DictConfig):
     datasets = get_datasets(config)
     print_debug(my_print, "Length of datasets:", len(datasets), debug_mode)
     model = load_model_by_name(config)
-
+    exit()
     num_samples = 20 if 'gpt' in config.model.name else 96
     batch_size =  0  if 'gpt' in config.model.name else 6
 
