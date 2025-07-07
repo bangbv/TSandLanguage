@@ -47,6 +47,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     scalers = [get_scaler(train[i].values, alpha=config.model.alpha, beta=config.model.beta, basic=config.model.basic) for i in range(len(train))]
     print_debug(my_print, "pre_processing_llama: rescale_pre_processing: scaler:", scalers, debug_node)
     input_arrs = [train[i].values for i in range(len(train))] # convert pd.Series to np.array
+    print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_arrs:",input_arrs, debug_node)
     '''
         Normailize time series, to make rescaled result locate in certain range 
         
