@@ -133,6 +133,7 @@ def build_save_path(config):
     return save_dir
 
 def is_completion(save_dir , dsname, is_test_mode=False ):
+    print(f"Checking if completion exists for {dsname} in {save_dir}")
     if os.path.exists(f'{save_dir}/{dsname}.pkl'):
         if is_test_mode:
             print("uuid {} has been finished, but in test mode, so we will not skip it".format(dsname))

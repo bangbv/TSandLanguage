@@ -28,7 +28,7 @@ def run(config: DictConfig):
         if is_completion(save_dir , dsname, is_test_mode) : continue
         outs_dict = {}
         train, test , description= data
-        # print(train , ' -- tes tLen:' , len(test) )
+        print_debug(my_print, "main_llama:run:Processing dataset:", dsname, debug_mode)
         _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
         # print(input_strs)
         try:
