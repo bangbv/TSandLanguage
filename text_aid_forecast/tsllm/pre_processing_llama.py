@@ -62,9 +62,9 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     '''
     if(config.is_fourier):
         input_arrs = ft.fourier_transform(input_arrs)
-        print_debug(my_print, "rescale_pre_processing: fourier_transform input_ft_arrs:", input_arrs[0][:3], debug_node)
+        print_debug(my_print, "rescale_pre_processing: fourier_transform input_ft_arrs:", input_arrs, debug_node)
     transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
-    print_debug(my_print, "rescale_pre_processing: transformed_input_arrs:", transformed_input_arrs[0][:3], debug_node)
+    print_debug(my_print, "rescale_pre_processing: transformed_input_arrs:", transformed_input_arrs, debug_node)
     '''
         Shift the decimal point to ensure that values after rescaling fall within the 0-2000 range as much as possible.
          
@@ -75,7 +75,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     '''
 
     input_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs] # convert np.array to str
-    print_debug(my_print, "rescale_pre_processing: serialize_arr:input_strs:", input_strs[0].split(',')[:3], debug_node)
+    print_debug(my_print, "rescale_pre_processing: serialize_arr:input_strs:", input_strs, debug_node)
     truncated_input_arr, truncated_input_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , describtions )]) # truncate input to fit the model's maximum context length
-    print_debug(my_print, "rescale_pre_processing: truncated_input_str:", truncated_input_str[0].split(',')[:3], debug_node)
+    print_debug(my_print, "rescale_pre_processing: truncated_input_str:", truncated_input_str, debug_node)
     return truncated_input_arr, truncated_input_str , scalers , test

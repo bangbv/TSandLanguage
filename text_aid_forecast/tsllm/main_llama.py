@@ -30,10 +30,11 @@ def run(config: DictConfig):
         train, test , description= data
         print_debug(my_print, "main_llama:run:Processing dataset:", dsname, debug_mode)
         _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
-        # print(input_strs)
+        print_debug(my_print, "main_llama:run:pre_processing:input_strs", input_strs, debug_mode)
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
-            print(f"main:run: the result {out}")
+            print_debug(my_print, "main_llama:run:get_predict_results:out",
+                        out, debug_mode)
             outs_dict[config.model.name] = out
         except Exception as e:
             print(f"Failed {dsname} {config.model.name}" + str(e) )
