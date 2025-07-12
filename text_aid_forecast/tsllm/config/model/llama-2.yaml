@@ -2,7 +2,7 @@ name: 'llama-7b-chat'
 temp: 1.0     # 0-1 controls the creativity/randomness of the generated text. 1 means very random
 alpha: 0.99   # This is for data preprecssing, scaler.
 beta: 0.3    # This is for data preprecssing, scaler.
-basic: False  # This is for data preprecssing, scaler.
+basic: True  # This is for data preprecssing, scaler.
 top_p: 0.8 
 context_lengths: 4096 # All llama context length is 4096. GPT is 4097
 settings: 
@@ -11,7 +11,7 @@ settings:
   signed: True 
   fixed_length: False 
   max_val: 10000000.0 
-  time_sep: ','
+  time_sep: ', '
   bit_sep: '' 
   plus_sign: '' 
   minus_sign: '-' 

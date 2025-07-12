@@ -50,8 +50,7 @@ def get_scaler(history, alpha=0.95, beta=0.3, basic=False):
             q = 1
         def transform(x):
             x = (x - min_) / q
-            print(np.min(x) , np.max(x))
-            exit()
+            print(f"get_scaler: transform min: {np.min(x)}, max: {np.max(x)}")
             return x
         def inv_transform(x):
             return x * q + min_
