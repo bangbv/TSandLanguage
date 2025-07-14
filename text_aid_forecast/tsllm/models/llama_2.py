@@ -53,6 +53,7 @@ class LLAMAmodel(torch.nn.Module):
         return tokenizer
 
     def get_model_and_tokenizer(self, model_name, cache_model=False):
+        print_debug(my_print, "LLAMAmodel:get_model_and_tokenizer:model_name:", model_name, True)
         if model_name in self.loaded:
             return self.loaded[model_name]
         name_parts = model_name.split("-")
@@ -74,14 +75,32 @@ class LLAMAmodel(torch.nn.Module):
         return model, tokenizer
 
     def tokenize_fn(self, str, model_name):
+        print_debug(my_print, "LLAMAmodel:tokenize_fn:model_name:", model_name, True)
+        print_debug(my_print, "LLAMAmodel:tokenize_fn:str:", str, True)
         tokenizer = self.get_tokenizer(model_name)
         return tokenizer(str)
 
     def run(self, input_str, description, steps, batch_size, num_samples, temp):
+        print_debug(my_print, "LLAMAmodel:run:input_str:", input_str,True)
+        print_debug(my_print, "LLAMAmodel:run:description:", description,True)
+        print_debug(my_print, "LLAMAmodel:run:steps:", steps,True)
+        print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,True)
+        print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,True)
+        print_debug(my_print, "LLAMAmodel:run:temp:", temp,True)
         if self.task == 'forecast':
             return self.forecast(input_str, description, steps, num_samples, temp)
 
     def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
+        print_debug(my_print, "LLAMAmodel:forecast:model_name:", model_name, True)
+        print_debug(my_print, "LLAMAmodel:forecast:input_str:", input_str,True)
+        print_debug(my_print, "LLAMAmodel:forecast:steps:", steps,True)
+        print_debug(my_print, "LLAMAmodel:forecast:settings:", settings,True)
+        print_debug(my_print, "LLAMAmodel:forecast:batch_size:", batch_size,True)
+        print_debug(my_print, "LLAMAmodel:forecast:num_samples:", num_samples,True)
+        print_debug(my_print, "LLAMAmodel:forecast:temp:", temp,True)
+        print_debug(my_print, "LLAMAmodel:forecast:top_p:", top_p,True)
+        print_debug(my_print, "LLAMAmodel:forecast:cache_model:", cache_model,True)
+        exit()
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
 
