@@ -77,12 +77,11 @@ class LLAMAmodel(torch.nn.Module):
         tokenizer = self.get_tokenizer(model_name)
         return tokenizer(str)
 
-    def run(self, input_str, description, steps, num_samples, temp):
+    def run(self, input_str, description, steps, batch_size, num_samples, temp):
         if self.task == 'forecast':
             return self.forecast(input_str, description, steps, num_samples, temp)
 
-    def forecast(self, model_name, input_str, steps, settings, batch_size=5,
-            num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
+    def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
 

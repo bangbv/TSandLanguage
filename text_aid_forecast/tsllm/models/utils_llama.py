@@ -38,8 +38,7 @@ def get_output_format(preds , test , results_list , model_name , input_strs ):
     }
     return out_dict
 
-def get_predict_results(model , input_strs  , test, description,
-                        config, batch_size, num_samples, scalers=None ):
+def get_predict_results(model , input_strs, test, description, config, batch_size, num_samples, scalers=None ):
     debug_node = config.debug_mode
     results_list = []
     batch_preds = []
