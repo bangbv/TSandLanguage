@@ -29,7 +29,7 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:get_tokenizer:model_name:",model_name, self.debug_mode)
         name_parts = model_name.split("-")
         print_debug(my_print, "LLAMAmodel:get_tokenizer:name_parts:", name_parts, self.debug_mode)
-        model_size = name_parts[0]
+        model_size = name_parts[1]
         print_debug(my_print, "LLAMAmodel:get_tokenizer:model_size:", model_size, self.debug_mode)
         chat = len(name_parts) > 1
         assert model_size in ["7b", "13b", "70b"]
