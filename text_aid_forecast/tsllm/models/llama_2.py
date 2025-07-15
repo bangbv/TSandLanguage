@@ -103,8 +103,8 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:forecast:temp:", temp,True)
         print_debug(my_print, "LLAMAmodel:forecast:top_p:", top_p,True)
         print_debug(my_print, "LLAMAmodel:forecast:cache_model:", cache_model,True)
-        print_debug(my_print, "LLAMAmodel:forecast:settings.time_sep:", settings.time_sep,True)
-        avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
+        print_debug(my_print, "LLAMAmodel:forecast:settings.model.time_sep:", settings.model.time_sep,True)
+        avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.model.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
 
         model, tokenizer = self.get_model_and_tokenizer(model_name, cache_model=cache_model)
@@ -120,7 +120,7 @@ class LLAMAmodel(torch.nn.Module):
             batch = {k: v.cuda() for k, v in batch.items()}
             num_input_ids = batch['input_ids'].shape[1]
 
-            good_tokens_str = list("0123456789" + settings.time_sep)
+            good_tokens_str = list("0123456789" + settings.model.time_sep)
             good_tokens = [tokenizer.convert_tokens_to_ids(token) for token in good_tokens_str]
             # good_tokens += [tokenizer.eos_token_id]
             bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
