@@ -51,7 +51,7 @@ def get_predict_results(model , input_strs, test, description, config, batch_siz
     results_list = []
     batch_preds = []
     for input_str in tqdm(input_strs):
-        res = model.run(input_str , description , config.model.test_len*STEP_MULTIPLIER , batch_size ,num_samples , config.model.temp )
+        res = model.run(input_str , description , config.model.test_len*STEP_MULTIPLIER , config, batch_size ,num_samples , config.model.temp )
         print_debug(my_print, "utils: get_predict_results: run: res", res[:3], debug_node)
         results_list.append(res)
 
