@@ -29,7 +29,7 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:get_tokenizer:model_name:",model_name, self.debug_mode)
         name_parts = model_name.split("-")
         print_debug(my_print, "LLAMAmodel:get_tokenizer:name_parts:", name_parts, self.debug_mode)
-        model_size = name_parts[1]
+        model_size = name_parts[0]
         print_debug(my_print, "LLAMAmodel:get_tokenizer:model_size:", model_size, self.debug_mode)
         chat = len(name_parts) > 1
         assert model_size in ["7b", "13b", "70b"]
@@ -88,7 +88,7 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,True)
         print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,True)
         print_debug(my_print, "LLAMAmodel:run:temp:", temp,True)
-        model_name = settings.model.name
+        model_name = settings.model.model_name
         print_debug(my_print, "LLAMAmodel:run:model_name:", model_name, True)
         if self.task == 'forecast':
             return self.forecast(model_name, input_str, steps, description, settings, num_samples, temp)
