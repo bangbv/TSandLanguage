@@ -88,7 +88,7 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,True)
         print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,True)
         print_debug(my_print, "LLAMAmodel:run:temp:", temp,True)
-        model_name = settings.model.model_name
+        model_name = settings.model.name
         print_debug(my_print, "LLAMAmodel:run:model_name:", model_name, True)
         if self.task == 'forecast':
             return self.forecast(model_name, input_str, steps, description, settings, num_samples, temp)
