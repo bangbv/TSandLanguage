@@ -26,6 +26,7 @@ class LLAMAmodel(torch.nn.Module):
         return model_string
 
     def get_tokenizer(self, model_name):
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:model_name:",model_name, self.debug_mode)
         name_parts = model_name.split("-")
         print_debug(my_print, "LLAMAmodel:get_tokenizer:name_parts:", name_parts, self.debug_mode)
         model_size = name_parts[0]
