@@ -112,6 +112,7 @@ class LLAMAmodel(torch.nn.Module):
 
         model, tokenizer = self.get_model_and_tokenizer(model_name, cache_model=cache_model)
 
+        print_debug(my_print, "LLAMAmodel:forecast", "finish get_model_and_tokenizer:",True)
         gen_strs = []
         for _ in tqdm(range(num_samples // batch_size)):
             batch = tokenizer(
@@ -119,6 +120,7 @@ class LLAMAmodel(torch.nn.Module):
                 return_tensors="pt",
             )
 
+            print_debug(my_print, "LLAMAmodel:forecast: batch",batch, True)
             batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
             batch = {k: v.cuda() for k, v in batch.items()}
             num_input_ids = batch['input_ids'].shape[1]
@@ -137,11 +139,14 @@ class LLAMAmodel(torch.nn.Module):
                 bad_words_ids=[[t] for t in bad_tokens],
                 renormalize_logits=True,
             )
+            print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,True)
             gen_strs += tokenizer.batch_decode(
                 generate_ids[:, num_input_ids:],
                 skip_special_tokens=True,
                 clean_up_tokenization_spaces=False
             )
+
+            print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, True)
         return gen_strs
 
 def print_debug(f, header, value, debug_mode = False):
