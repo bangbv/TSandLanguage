@@ -114,6 +114,8 @@ class LLAMAmodel(torch.nn.Module):
 
         print_debug(my_print, "LLAMAmodel:forecast", "finish get_model_and_tokenizer:",True)
         gen_strs = []
+        print_debug(my_print, "LLAMAmodel:forecast: num_samples", num_samples, True)
+        print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size, True)
         for _ in tqdm(range(num_samples // batch_size)):
             batch = tokenizer(
                 [input_str],
