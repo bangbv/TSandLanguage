@@ -40,6 +40,7 @@ class LLAMAmodel(torch.nn.Module):
             use_fast=False,
         )
 
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:", "finish init tokenizer", self.debug_mode)
         special_tokens_dict = dict()
         if tokenizer.eos_token is None:
             special_tokens_dict["eos_token"] = self.DEFAULT_EOS_TOKEN
@@ -50,7 +51,7 @@ class LLAMAmodel(torch.nn.Module):
 
         tokenizer.add_special_tokens(special_tokens_dict)
         tokenizer.pad_token = tokenizer.eos_token
-
+        print_debug(my_print, "LLAMAmodel:get_tokenizer:", "finish get_tokenizer", self.debug_mode)
         return tokenizer
 
     def get_model_and_tokenizer(self, model_name, cache_model=False):
