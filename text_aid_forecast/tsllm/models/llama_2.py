@@ -16,7 +16,7 @@ class LLAMAmodel(torch.nn.Module):
         self.DEFAULT_BOS_TOKEN = "<s>"
         self.DEFAULT_UNK_TOKEN = "<unk>"
         self.loaded = {}
-        self.debug_mode = config.debug_mode
+        self.debug_mode: bool = config.debug_mode
 
     def llama2_model_string(self, model_size, chat):
         print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
@@ -77,55 +77,55 @@ class LLAMAmodel(torch.nn.Module):
         return model, tokenizer
 
     def tokenize_fn(self, str, model_name):
-        print_debug(my_print, "LLAMAmodel:tokenize_fn:model_name:", model_name, True)
-        print_debug(my_print, "LLAMAmodel:tokenize_fn:str:", str, True)
+        print_debug(my_print, "LLAMAmodel:tokenize_fn:model_name:", model_name, self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:tokenize_fn:str:", str, self.debug_mode)
         tokenizer = self.get_tokenizer(model_name)
         return tokenizer(str)
 
     def run(self, input_str, description, steps, config, batch_size, num_samples, temp):
-        print_debug(my_print, "LLAMAmodel:run:input_str:", input_str,True)
-        print_debug(my_print, "LLAMAmodel:run:description:", description,True)
-        print_debug(my_print, "LLAMAmodel:run:steps:", steps,True)
-        print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,True)
-        print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,True)
-        print_debug(my_print, "LLAMAmodel:run:temp:", temp,True)
+        print_debug(my_print, "LLAMAmodel:run:input_str:", input_str,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:description:", description,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:steps:", steps,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:temp:", temp,self.debug_mode)
         model_name = config.model.model_name
         settings = config.model.settings
-        print_debug(my_print, "LLAMAmodel:run:model_name:", model_name, True)
-        print_debug(my_print, "LLAMAmodel:run:settings:", settings, True)
+        print_debug(my_print, "LLAMAmodel:run:model_name:", model_name, self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:run:settings:", settings, self.debug_mode)
         if self.task == 'forecast':
             return self.forecast(model_name, input_str, steps, settings, batch_size, num_samples, temp)
 
     def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
-        print_debug(my_print, "LLAMAmodel:forecast:model_name:", model_name, True)
-        print_debug(my_print, "LLAMAmodel:forecast:input_str:", input_str,True)
-        print_debug(my_print, "LLAMAmodel:forecast:steps:", steps,True)
-        print_debug(my_print, "LLAMAmodel:forecast:settings:", settings,True)
-        print_debug(my_print, "LLAMAmodel:forecast:batch_size:", batch_size,True)
-        print_debug(my_print, "LLAMAmodel:forecast:num_samples:", num_samples,True)
-        print_debug(my_print, "LLAMAmodel:forecast:temp:", temp,True)
-        print_debug(my_print, "LLAMAmodel:forecast:top_p:", top_p,True)
-        print_debug(my_print, "LLAMAmodel:forecast:cache_model:", cache_model,True)
-        print_debug(my_print, "LLAMAmodel:forecast:settings.time_sep:", settings.time_sep,True)
+        print_debug(my_print, "LLAMAmodel:forecast:model_name:", model_name, self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:input_str:", input_str,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:steps:", steps,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:settings:", settings,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:batch_size:", batch_size,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:num_samples:", num_samples,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:temp:", temp,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:top_p:", top_p,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:cache_model:", cache_model,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:settings.time_sep:", settings.time_sep,self.debug_mode)
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
 
         model, tokenizer = self.get_model_and_tokenizer(model_name, cache_model=cache_model)
 
-        print_debug(my_print, "LLAMAmodel:forecast", "finish get_model_and_tokenizer:",True)
+        print_debug(my_print, "LLAMAmodel:forecast", "finish get_model_and_tokenizer:",self.debug_mode)
         gen_strs = []
-        print_debug(my_print, "LLAMAmodel:forecast: num_samples", num_samples, True)
-        print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size, True)
+        print_debug(my_print, "LLAMAmodel:forecast: num_samples", num_samples, self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size, self.debug_mode)
         test_value = range(num_samples // batch_size)
-        print_debug(my_print, "LLAMAmodel:forecast: test_value", test_value,True)
+        print_debug(my_print, "LLAMAmodel:forecast: test_value", test_value,self.debug_mode)
         for _ in tqdm(range(num_samples // batch_size)):
-            print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size,True)
+            print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size,self.debug_mode)
             batch = tokenizer(
                 [input_str],
                 return_tensors="pt",
             )
 
-            print_debug(my_print, "LLAMAmodel:forecast: batch",batch, True)
+            print_debug(my_print, "LLAMAmodel:forecast: batch",batch, self.debug_mode)
             batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
             batch = {k: v.cuda() for k, v in batch.items()}
             num_input_ids = batch['input_ids'].shape[1]
@@ -144,14 +144,14 @@ class LLAMAmodel(torch.nn.Module):
                 bad_words_ids=[[t] for t in bad_tokens],
                 renormalize_logits=True,
             )
-            print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,True)
+            print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,self.debug_mode)
             gen_strs += tokenizer.batch_decode(
                 generate_ids[:, num_input_ids:],
                 skip_special_tokens=True,
                 clean_up_tokenization_spaces=False
             )
 
-            print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, True)
+            print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, self.debug_mode)
         return gen_strs
 
 def print_debug(f, header, value, debug_mode = False):
