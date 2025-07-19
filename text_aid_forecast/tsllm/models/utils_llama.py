@@ -22,7 +22,6 @@ def load_model_by_name(config):
 
 
 def get_output_format(preds , test , results_list , model_name , input_strs ):
-    
     samples = [pd.DataFrame(preds[i], columns=test[i].index) for i in range(len(preds))]
     medians = [sample.median(axis=0) for sample in samples]
     samples = samples if len(samples) > 1 else samples[0]
@@ -39,14 +38,7 @@ def get_output_format(preds , test , results_list , model_name , input_strs ):
     return out_dict
 
 def get_predict_results(model , input_strs, test, description, config, batch_size, num_samples, scalers=None ):
-    print_debug(my_print, "utils_llama:get_predict_results:model:", model, True)
-    print_debug(my_print, "utils_llama:get_predict_results:input_strs:", input_strs, True)
-    print_debug(my_print, "utils_llama:get_predict_results:test:", test, True)
-    print_debug(my_print, "utils_llama:get_predict_results:description:", description, True)
-    print_debug(my_print, "utils_llama:get_predict_results:config:", config, True)
-    print_debug(my_print, "utils_llama:get_predict_results:batch_size:", batch_size, True)
-    print_debug(my_print, "utils_llama:get_predict_results:num_samples:", num_samples, True)
-    print_debug(my_print, "utils_llama:get_predict_results:scalers:", scalers, True)
+    print_debug(my_print, "utils_llama:get_predict_results:model", model, True)
     debug_node = config.debug_mode
     results_list = []
     batch_preds = []

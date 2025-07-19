@@ -83,41 +83,18 @@ class LLAMAmodel(torch.nn.Module):
         return tokenizer(str)
 
     def run(self, input_str, description, steps, config, batch_size, num_samples, temp):
-        print_debug(my_print, "LLAMAmodel:run:input_str:", input_str,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:description:", description,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:steps:", steps,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:batch_size:", batch_size,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:num_samples:", num_samples,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:temp:", temp,self.debug_mode)
         model_name = config.model.model_name
         settings = config.model.settings
-        print_debug(my_print, "LLAMAmodel:run:model_name:", model_name, self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:run:settings:", settings, self.debug_mode)
         if self.task == 'forecast':
             return self.forecast(model_name, input_str, steps, settings, batch_size, num_samples, temp)
 
     def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
-        print_debug(my_print, "LLAMAmodel:forecast:model_name:", model_name, self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:input_str:", input_str,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:steps:", steps,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:settings:", settings,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:batch_size:", batch_size,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:num_samples:", num_samples,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:temp:", temp,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:top_p:", top_p,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:cache_model:", cache_model,self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast:settings.time_sep:", settings.time_sep,self.debug_mode)
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
-
         model, tokenizer = self.get_model_and_tokenizer(model_name, cache_model=cache_model)
 
         print_debug(my_print, "LLAMAmodel:forecast", "finish get_model_and_tokenizer:",self.debug_mode)
         gen_strs = []
-        print_debug(my_print, "LLAMAmodel:forecast: num_samples", num_samples, self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size, self.debug_mode)
-        test_value = range(num_samples // batch_size)
-        print_debug(my_print, "LLAMAmodel:forecast: test_value", test_value,self.debug_mode)
         for _ in tqdm(range(num_samples // batch_size)):
             print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size,self.debug_mode)
             batch = tokenizer(
