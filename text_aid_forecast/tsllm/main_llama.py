@@ -7,34 +7,39 @@ from tsllm.pre_processing_llama import pre_processing
 import os , pickle , time
 
 from tsllm.token_utils import build_save_path  , is_completion
-from tsllm.models.utils_llama import print_debug, my_print
+import logging
 
 
 @hydra.main(config_path="config", config_name="config", version_base="1.2")
 def run(config: DictConfig):
     debug_mode = config.debug_mode
+    logger = logging.getLogger("tsllm:main_llama")
+    if debug_mode:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    logger.debug({"tsllm:main_llama:config": config})
+
     is_test_mode = config.is_test_mode
-    print_debug(my_print, "Running with config", config, debug_mode)
     datasets = get_datasets(config)
-    print_debug(my_print, "Length of datasets:", len(datasets), debug_mode)
+    logger.debug({"tsllm:main_llama:Length of datasets": len(datasets)})
     model = load_model_by_name(config)
     num_samples = 20 if 'gpt' in config.model.name else 96
     batch_size =  0  if 'gpt' in config.model.name else 6
 
     scalers = None
     save_dir = build_save_path(config)
-    print_debug(my_print, "Save dir:", len(datasets), debug_mode)
+    logger.debug({"tsllm:main_llama:save_dir": save_dir})
     for dsname,data in datasets.items():
         if is_completion(save_dir , dsname, is_test_mode) : continue
         outs_dict = {}
         train, test , description= data
-        print_debug(my_print, "main_llama:run:Processing dataset:", dsname, debug_mode)
+        logger.debug({"tsllm:main_llama:Processing dataset": dsname})
         _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
-        print_debug(my_print, "main_llama:run:pre_processing:input_strs", input_strs, debug_mode)
+        logger.debug({"tsllm:main_llama:run:pre_processing:input_strs": input_strs})
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
-            print_debug(my_print, "main_llama:run:get_predict_results:out",
-                        out, debug_mode)
+            logger.debug({"tsllm:main_llama:run:get_predict_results:out": out})
             outs_dict[config.model.name] = out
         except Exception as e:
             print(f"Failed {dsname} {config.model.name}" + str(e) )

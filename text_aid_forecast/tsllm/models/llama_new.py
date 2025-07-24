@@ -22,7 +22,6 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
         chat = "chat-" if chat else ""
         model_string = f"meta-llama/Llama-2-{model_size.lower()}-{chat}hf"
-        print(f"LLAMAmodel:llama2_model_string:model_string: {model_string}", flush=True)
         return model_string
 
     def load_tokenizer(self, model_name):
@@ -73,9 +72,19 @@ class LLAMAmodel(torch.nn.Module):
 
     def tokenize_fn(self, str, model_name):
         print_debug(my_print, "LLAMAmodel:tokenize_fn:model_name:", model_name, self.debug_mode)
-        print_debug(my_print, "LLAMAmodel:tokenize_fn:str:", str, self.debug_mode)
-        tokenizer = self.get_tokenizer(model_name)
+        tokenizer = self.load_tokenizer(model_name)
         return tokenizer(str)
+
+    def input_embeds(self, batch_size, seq_len, hidden_dim):
+        # your vector: shape (1, hidden_dim)
+        projected = projection_layer(your_vector).unsqueeze(
+            1)  # (1, 1, hidden_dim)
+        tokens = tokenizer("your prompt", return_tensors='pt')
+        token_embeddings = model.transformer.wte(tokens.input_ids)
+
+        input_embedding_vectors = torch.cat([projected, token_embeddings], dim=1)
+
+        return input_embedding_vectors
 
     def run(self, input_str, description, steps, config, batch_size, num_samples, temp):
         model_name = config.model.model_name
@@ -107,15 +116,34 @@ class LLAMAmodel(torch.nn.Module):
             # good_tokens += [tokenizer.eos_token_id]
             bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
 
+            # Example: encode a retrieved passage with Sentence-BERT
+            retriever = SentenceTransformer(
+                "sentence-transformers/all-MiniLM-L6-v2", device=device)
+            doc_text = "Vietnamese e-wallet MoMo offers pay-later loans with dynamic credit limits."
+            ext_vec = retriever.encode(doc_text, convert_to_tensor=True,
+                                       device=device)  # [768]
+
+            proj = nn.Linear(ext_vec.shape[-1], hidden_size, bias=False).to(device).half()
+            prefix_embed = proj(ext_vec).unsqueeze(0).unsqueeze(1)  # [1, 1, 4096]
+
+            prompt = "Summarise the product in one sentence."
+            tok = tokenizer(prompt, return_tensors="pt").to(device)
+            tok_embeds = model.model.embed_tokens(tok.input_ids)  # [1, S, 4096]
+
+            inputs_embeds = torch.cat([prefix_embed, tok_embeds],
+                                      dim=1)  # [1, 1+S, 4096]
+
+            attn_mask = torch.ones(inputs_embeds.shape[:2], dtype=torch.long,
+                                   device=device)
+
             generate_ids = model.generate(
-                **batch,
+                inputs_embeds=inputs_embeds,
+                attention_mask=attn_mask,
+                max_new_tokens=60,
                 do_sample=True,
-                max_new_tokens=max_tokens,
-                temperature=temp,
-                top_p=top_p,
-                bad_words_ids=[[t] for t in bad_tokens],
-                renormalize_logits=True,
+                temperature=temp
             )
+
             print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,self.debug_mode)
             gen_strs += tokenizer.batch_decode(
                 generate_ids[:, num_input_ids:],
