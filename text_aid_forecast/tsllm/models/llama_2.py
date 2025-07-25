@@ -4,6 +4,7 @@ from transformers import (
     LlamaForCausalLM,
     LlamaTokenizer,
 )
+import logging
 
 class LLAMAmodel(torch.nn.Module):
     def __init__(self, config):
@@ -17,6 +18,11 @@ class LLAMAmodel(torch.nn.Module):
         self.DEFAULT_UNK_TOKEN = "<unk>"
         self.loaded = {}
         self.debug_mode: bool = config.debug_mode
+        self.logger = logging.getLogger("tsllm:models:llama_2:LLAMAmodel:__init__")
+        if self.debug_mode:
+            self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.INFO)
 
     def llama2_model_string(self, model_size, chat):
         print_debug(my_print, "LLAMAmodel:llama2_model_string:chat:", chat, self.debug_mode)
@@ -89,6 +95,8 @@ class LLAMAmodel(torch.nn.Module):
             return self.forecast(model_name, input_str, steps, settings, batch_size, num_samples, temp)
 
     def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
+        # add log for this input with the logger
+        self.logger.debug(f"LLAMAmodel:forecast: model_name: {model_name}, input_str: {input_str}, steps: {steps}, settings: {settings}, batch_size: {batch_size}, num_samples: {num_samples}, temp: {temp}, top_p: {top_p}")
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
         model, tokenizer = self.get_model_and_tokenizer(model_name, cache_model=cache_model)
