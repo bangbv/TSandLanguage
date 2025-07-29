@@ -1,4 +1,4 @@
-from tsllm.models.llama_2 import LLAMAmodel
+from tsllm.models.llama_new import LLAMAmodel
 from tqdm import tqdm
 
 import numpy as np 

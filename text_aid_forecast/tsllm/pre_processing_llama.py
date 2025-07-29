@@ -62,8 +62,8 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     '''
     if(config.is_fourier):
         input_arrs = ft.fourier_transform(input_arrs)
-        print_debug(my_print, "rescale_pre_processing: fourier_transform input_ft_arrs:", input_arrs, debug_node)
-    transformed_input_arrs =  np.array([1.0323544,0.99864064,1.01294242])
+        print_debug(my_print, "pre_processing_llama: rescale_pre_processing: fourier_transform:input_ft_arrs:", input_arrs, debug_node)
+    # transformed_input_arrs =  np.array([1.0323544,0.99864064,1.01294242])
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: default input_arrs:",input_arrs, debug_node)
     try:
         transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
