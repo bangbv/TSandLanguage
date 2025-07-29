@@ -9,7 +9,7 @@ scale_size: 0
 output_dir : './outputs/2025-06-14'
 is_test_context_length: False
 is_reasoning: True # whether to use reasoning for time series data
-is_fourier: False # whether to use fourier transform for time series data
+is_fourier: True # whether to use fourier transform for time series data
 debug_mode: True # will print the logging messages
 is_test_mode: True # the length of time series data is 10
 ts_length: 10 # the length of time series data
