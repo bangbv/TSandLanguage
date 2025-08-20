@@ -19,3 +19,7 @@ settings:
   half_bin_correction: True 
   decimal_point: '' 
   missing_str: ' Nan'
+decompose:
+  is_decompose: True # whether to decompose the time series data
+  period: 7 # the period of the time series data
+  robust: True # whether to use robust decomposition

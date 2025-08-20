@@ -4,6 +4,7 @@ from tsllm.serialize import serialize_arr , ori_scale_serialize
 from omegaconf import open_dict
 import numpy as np
 import tsllm.models.fourier_transforms as ft
+import tsllm.models.decompose_series as ds
     
 def pre_processing(train, test, describtion  , config , tokenizer, debug_node=False  ):
     if 'rescale' in config.experiment.preprocess : 
@@ -48,6 +49,16 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     print_debug(my_print, "pre_processing_llama: rescale_pre_processing: scaler:", scalers, debug_node)
     input_arrs = [train[i].values for i in range(len(train))] # convert pd.Series to np.array
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_arrs:",input_arrs, debug_node)
+    input_trend_arrs, input_season_arrs, input_resid_arrs = [], [], []
+    for i in range(len(train)) :
+      trend, seasonal, resid = ds.decompose_series(train[i].values,period=config.model.decompose.period,robust=config.model.decompose.robust)
+      input_trend_arrs.append(trend)
+      input_season_arrs.append(seasonal)
+      input_resid_arrs.append(resid)
+    print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_trend_arrs:", input_trend_arrs,debug_node)
+    print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_season_arrs:",input_season_arrs, debug_node)
+    print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_resid_arrs:", input_resid_arrs,debug_node)
+    exit()
     '''
         Normailize time series, to make rescaled result locate in certain range 
         
@@ -63,6 +74,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     if(config.is_fourier):
         input_arrs = ft.fourier_transform(input_arrs)
         print_debug(my_print, "pre_processing_llama: rescale_pre_processing: fourier_transform:input_ft_arrs:", input_arrs, debug_node)
+
     # transformed_input_arrs =  np.array([1.0323544,0.99864064,1.01294242])
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: default input_arrs:",input_arrs, debug_node)
     try:
