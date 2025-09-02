@@ -58,7 +58,6 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_trend_arrs:", input_trend_arrs,debug_node)
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_season_arrs:",input_season_arrs, debug_node)
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: input_resid_arrs:", input_resid_arrs,debug_node)
-    exit()
     '''
         Normailize time series, to make rescaled result locate in certain range 
         
@@ -71,16 +70,24 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
         transform     : (x - min_) / q
         inv_transform : x * q + min_ 
     '''
-    if(config.is_fourier):
+    if config.is_fourier:
         input_arrs = ft.fourier_transform(input_arrs)
         print_debug(my_print, "pre_processing_llama: rescale_pre_processing: fourier_transform:input_ft_arrs:", input_arrs, debug_node)
 
-    # transformed_input_arrs =  np.array([1.0323544,0.99864064,1.01294242])
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: default input_arrs:",input_arrs, debug_node)
-    try:
-        transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
-    except Exception as e:
-        print_debug(my_print, "pre_processing_llama:rescale_pre_processing: Exception in scaler.transform:", e, debug_node)
+    transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
+    rtss = []
+    ita_scalers = zip(input_trend_arrs, scalers)
+    print_debug(my_print, "pre_processing_llama: rescale_pre_processing: ita_scalers:",ita_scalers, debug_node)
+    for trend_arr, scaler in ita_scalers:
+      rtr = scaler.transform(trend_arr)
+      print_debug(my_print,"pre_processing_llama: rescale_pre_processing: rtr:",rtr, debug_node)
+      rtss.append(rtr)
+    print_debug(my_print,"pre_processing_llama: rescale_pre_processing: rtss:", rtss, debug_node)
+    transformed_trend_arrs = np.array(rtss)
+    # transformed_trend_arrs = np.array([scaler.transform(trend_arr) for trend_arr, scaler in zip(input_trend_arrs, scalers)])
+    # transformed_season_arrs = np.array([scaler.transform(season_arr) for season_arr, scaler in zip(input_season_arrs, scalers)])
+    # transformed_resid_arrs = np.array([scaler.transform(resid_arr) for resid_arr, scaler in zip(input_resid_arrs, scalers)])
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: after transformed_input_arrs:", transformed_input_arrs, debug_node)
     '''
         Shift the decimal point to ensure that values after rescaling fall within the 0-2000 range as much as possible.
@@ -91,8 +98,23 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
         input_strs: ['627, 661, 739, 723,....']
     '''
 
-    input_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs] # convert np.array to str
+    input_strs = [
+      serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs
+    ] # convert np.array to str
+    input_trend_strs = [
+      serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_trend_arrs
+    ]
+    # input_season_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_season_arrs]
+    # input_resid_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_resid_arrs]
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: serialize_arr:input_strs:", input_strs, debug_node)
-    truncated_input_arr, truncated_input_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , describtions )]) # truncate input to fit the model's maximum context length
+    truncated_input_arr, truncated_input_str = zip(*[
+      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , describtions )
+    ]) # truncate input to fit the model's maximum context length
+    truncated_trend_arr, truncated_trend_str = zip(*[
+      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_trend_arrs, input_trend_strs , describtions )
+    ])
+    # truncated_season_arr, truncated_season_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_season_arrs, input_season_strs , describtions )])
+    # truncated_resid_arr, truncated_resid_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , describtions )])
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_input_str:", truncated_input_str, debug_node)
-    return truncated_input_arr, truncated_input_str , scalers , test
+    return truncated_input_arr, truncated_input_str , scalers , test, truncated_trend_arr, truncated_trend_str
+    # truncated_season_arr, truncated_season_str, truncated_resid_arr, truncated_resid_str

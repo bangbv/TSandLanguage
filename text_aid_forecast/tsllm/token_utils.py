@@ -56,7 +56,7 @@ def get_scaler(history, alpha=0.95, beta=0.3, basic=False):
             return x * q + min_
     return Scaler(transform=transform, inv_transform=inv_transform)
 
-def truncate_input(input_arr, input_str , describtion , config, tokenizer=None  ):
+def truncate_input(input_arr, input_str , description , config, tokenizer=None):
     """
     Truncate inputs to the maximum context length for a given model.
     
@@ -84,8 +84,8 @@ def truncate_input(input_arr, input_str , describtion , config, tokenizer=None  
                 # add separator if not already present
                 truncated_input_str += config.model.settings['time_sep']
             
-            if describtion != '' : 
-                num_descri_tokens =len(tokenization_fn(describtion)) 
+            if description != '' :
+                num_descri_tokens =len(tokenization_fn(description))
             else : 
                 num_descri_tokens = 0 
                 
@@ -140,4 +140,8 @@ def is_completion(save_dir , dsname, is_test_mode=False ):
         print("uuid {} has been finished".format(dsname))
         return True
     else: 
-        return False 
+        return False
+
+# main function
+if __name__ == "__main__":
+    pass
