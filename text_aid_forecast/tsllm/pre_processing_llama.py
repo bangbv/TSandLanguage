@@ -109,16 +109,15 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     input_season_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_season_arrs]
     input_resid_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_resid_arrs]
 
-    truncated_input_arr, truncated_input_str = zip(*[
+    truncated_input_arrs, truncated_input_strs = zip(*[
       truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , describtions )
     ]) # truncate input to fit the model's maximum context length
-    truncated_trend_arr, truncated_trend_str = zip(*[
+    truncated_trend_arrs, truncated_trend_strs = zip(*[
       truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_trend_arrs, input_trend_strs , describtions )
     ])
-    truncated_season_arr, truncated_season_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_season_arrs, input_season_strs , describtions )])
-    truncated_resid_arr, truncated_resid_str = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , describtions )])
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_trend_arr:", truncated_trend_arr, debug_node)
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_season_arr:", truncated_season_arr, debug_node)
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_resid_arr:", truncated_resid_arr, debug_node)
-    return truncated_input_arr, truncated_input_str , scalers , test, truncated_trend_arr, truncated_trend_str
-    # truncated_season_arr, truncated_season_str, truncated_resid_arr, truncated_resid_str
+    truncated_season_arrs, truncated_season_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_season_arrs, input_season_strs , describtions )])
+    truncated_resid_arrs, truncated_resid_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , describtions )])
+    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_trend_arr:", truncated_trend_arrs, debug_node)
+    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_season_arr:", truncated_season_arrs, debug_node)
+    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_resid_arr:", truncated_resid_arrs, debug_node)
+    return truncated_input_arrs, truncated_input_strs , scalers , test, truncated_trend_arrs, truncated_trend_strs, truncated_season_arrs, truncated_season_strs, truncated_resid_arrs, truncated_resid_strs
