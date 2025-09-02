@@ -89,6 +89,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     # transformed_season_arrs = np.array([scaler.transform(season_arr) for season_arr, scaler in zip(input_season_arrs, scalers)])
     # transformed_resid_arrs = np.array([scaler.transform(resid_arr) for resid_arr, scaler in zip(input_resid_arrs, scalers)])
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: after transformed_input_arrs:", transformed_input_arrs, debug_node)
+    exit()
     '''
         Shift the decimal point to ensure that values after rescaling fall within the 0-2000 range as much as possible.
          

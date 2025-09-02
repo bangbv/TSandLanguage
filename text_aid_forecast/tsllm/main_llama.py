@@ -35,7 +35,7 @@ def run(config: DictConfig):
         outs_dict = {}
         train, test , description= data
         logger.debug({"tsllm:main_llama:Processing dataset": dsname})
-        _, input_strs ,  scalers , test  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
+        _, input_strs ,  scalers , test, truncated_trend_arr, truncated_trend_str  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
         logger.debug({"tsllm:main_llama:run:pre_processing:input_strs": input_strs})
         try:
             out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
