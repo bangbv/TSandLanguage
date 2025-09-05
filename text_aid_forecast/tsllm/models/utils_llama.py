@@ -37,13 +37,13 @@ def get_output_format(preds , test , results_list , model_name , input_strs ):
     }
     return out_dict
 
-def get_predict_results(model , input_strs, test, description, config, batch_size, num_samples, scalers=None ):
+def get_predict_results(model , input_strs,trend_strs, season_strs, resid_strs,  test, description, config, batch_size, num_samples, scalers=None ):
     print_debug(my_print, "utils_llama:get_predict_results:model", model, True)
     debug_node = config.debug_mode
     results_list = []
     batch_preds = []
     for input_str in tqdm(input_strs):
-        res = model.run(input_str , description , config.model.test_len*STEP_MULTIPLIER , config, batch_size ,num_samples , config.model.temp )
+        res = model.run(input_str, trend_strs, season_strs, resid_strs , description , config.model.test_len*STEP_MULTIPLIER , config, batch_size ,num_samples , config.model.temp )
         print_debug(my_print, "utils: get_predict_results: run: res", res[:3], debug_node)
         results_list.append(res)
 

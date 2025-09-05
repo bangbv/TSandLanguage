@@ -35,10 +35,10 @@ def run(config: DictConfig):
         outs_dict = {}
         train, test , description= data
         logger.debug({"tsllm:main_llama:Processing dataset": dsname})
-        _, input_strs ,  scalers , test, truncated_trend_arrs, truncated_trend_strs, truncated_season_arrs, truncated_season_strs, truncated_resid_arrs, truncated_resid_strs  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
+        _, input_strs ,  scalers , test, truncated_trend_arrs, trend_strs, season_arrs, season_strs, resid_arrs, resid_strs  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
         logger.debug({"tsllm:main_llama:run:pre_processing:input_strs": input_strs})
         try:
-            out = get_predict_results(model , input_strs  , test , description  , config, batch_size, num_samples, scalers = scalers )
+            out = get_predict_results(model , input_strs, trend_strs, season_strs, resid_strs , test , description  , config, batch_size, num_samples, scalers = scalers )
             logger.debug({"tsllm:main_llama:run:get_predict_results:out": out})
             outs_dict[config.model.name] = out
         except Exception as e:

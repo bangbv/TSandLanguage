@@ -81,8 +81,12 @@ class LLAMAmodel(torch.nn.Module):
         if self.task == 'forecast':
             return self.forecast(model_name, input_str, steps, settings, batch_size, num_samples, temp)
 
-    def forecast(self, model_name, input_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
+    def forecast(self, model_name, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
         # debug_mode = self.debug_mode
+        debug_mode = True
+        print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",input_trend_str, debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",input_season_str, debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",input_resid_str, debug_mode)
         debug_mode = False
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
