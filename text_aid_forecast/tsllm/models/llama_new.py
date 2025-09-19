@@ -101,8 +101,10 @@ class LLAMAmodel(torch.nn.Module):
                 return_tensors="pt",
             )
 
-            print_debug(my_print, "LLAMAmodel:forecast: batch",batch, debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: batch shape", batch.shape,debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: batch first",batch, debug_mode)
             batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
+            print_debug(my_print, "LLAMAmodel:forecast: batch dict", batch,debug_mode)
             batch = {k: v.cuda() for k, v in batch.items()}
             num_input_ids = batch['input_ids'].shape[1]
 
