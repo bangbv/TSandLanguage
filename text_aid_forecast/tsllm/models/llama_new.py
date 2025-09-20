@@ -99,16 +99,16 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:forecast: num_samples:", num_samples,self.debug_mode)
         print_debug(my_print, "LLAMAmodel:forecast: batch_size:", batch_size,self.debug_mode)
         for _ in tqdm(range(num_samples // batch_size)):
-            print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size,debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: _", _,self.debug_mode)
             batch = tokenizer(
                 [input_str],
                 return_tensors="pt",
             )
 
             # print_debug(my_print, "LLAMAmodel:forecast: batch shape", batch.shape,debug_mode)
-            print_debug(my_print, "LLAMAmodel:forecast: batch first",batch, debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: batch first",batch, self.debug_mode)
             batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
-            print_debug(my_print, "LLAMAmodel:forecast: batch dict", batch,debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: batch dict", batch,self.debug_mode)
             batch = {k: v.cuda() for k, v in batch.items()}
             num_input_ids = batch['input_ids'].shape[1]
 
