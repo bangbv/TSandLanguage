@@ -117,30 +117,6 @@ class LLAMAmodel(torch.nn.Module):
             # good_tokens += [tokenizer.eos_token_id]
             bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
 
-            # Example: encode a retrieved passage with Sentence-BERT
-            # retriever = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=device)
-            # doc_text = "Vietnamese e-wallet MoMo offers pay-later loans with dynamic credit limits."
-            # ext_vec = retriever.encode(doc_text, convert_to_tensor=True,device=device)  # [768]
-
-            # proj = nn.Linear(ext_vec.shape[-1], hidden_size, bias=False).to(device).half()
-            # prefix_embed = proj(ext_vec).unsqueeze(0).unsqueeze(1)  # [1, 1, 4096]
-
-            # prompt = "Summarise the product in one sentence."
-            # tok = tokenizer(prompt, return_tensors="pt").to(device)
-            # tok_embeds = model.model.embed_tokens(tok.input_ids)  # [1, S, 4096]
-
-            # inputs_embeds = torch.cat([prefix_embed, tok_embeds],dim=1)  # [1, 1+S, 4096]
-
-            # attn_mask = torch.ones(inputs_embeds.shape[:2], dtype=torch.long,device=device)
-
-            # generate_ids = model.generate(
-            #     inputs_embeds=inputs_embeds,
-            #     attention_mask=attn_mask,
-            #     max_new_tokens=60,
-            #     do_sample=True,
-            #     temperature=temp
-            # )
-
             generate_ids = model.generate(
                 **batch,
                 do_sample=True,
@@ -151,14 +127,14 @@ class LLAMAmodel(torch.nn.Module):
                 renormalize_logits=True,
             )
 
-            print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: generate_ids", generate_ids,self.debug_mode)
             gen_strs += tokenizer.batch_decode(
                 generate_ids[:, num_input_ids:],
                 skip_special_tokens=True,
                 clean_up_tokenization_spaces=False
             )
 
-            print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, self.debug_mode)
         return gen_strs
 
 def print_debug(f, header, value, debug_mode = False):
