@@ -91,11 +91,13 @@ class LLAMAmodel(torch.nn.Module):
         debug_mode = False
         avg_tokens_per_step = len(self.tokenize_fn(input_str, model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
-        cache_model = False
         model, tokenizer = self.load_model_and_tokenizer(model_name, cache_model=cache_model)
 
-        print_debug(my_print, "LLAMAmodel:forecast", "finish load_model_and_tokenizer:",self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast:model name","model name:", self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast: finish load_model_and_tokenizer", tokenizer,self.debug_mode)
         gen_strs = []
+        print_debug(my_print, "LLAMAmodel:forecast: num_samples:", num_samples,self.debug_mode)
+        print_debug(my_print, "LLAMAmodel:forecast: batch_size:", batch_size,self.debug_mode)
         for _ in tqdm(range(num_samples // batch_size)):
             print_debug(my_print, "LLAMAmodel:forecast: batch_size", batch_size,debug_mode)
             batch = tokenizer(
