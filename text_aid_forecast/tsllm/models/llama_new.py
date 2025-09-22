@@ -110,13 +110,14 @@ class LLAMAmodel(torch.nn.Module):
             batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
             print_debug(my_print, "LLAMAmodel:forecast: batch dict", batch,self.debug_mode)
             batch = {k: v.cuda() for k, v in batch.items()}
+            print_debug(my_print, "LLAMAmodel:forecast: batch third", batch,self.debug_mode)
             num_input_ids = batch['input_ids'].shape[1]
-
+            print_debug(my_print, "LLAMAmodel:forecast: num_input_ids", num_input_ids,self.debug_mode)
             good_tokens_str = list("0123456789" + settings.time_sep)
             good_tokens = [tokenizer.convert_tokens_to_ids(token) for token in good_tokens_str]
             # good_tokens += [tokenizer.eos_token_id]
             bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
-
+            print_debug(my_print, "LLAMAmodel:forecast: bad_tokens", bad_tokens, self.debug_mode)
             generate_ids = model.generate(
                 **batch,
                 do_sample=True,
@@ -133,8 +134,7 @@ class LLAMAmodel(torch.nn.Module):
                 skip_special_tokens=True,
                 clean_up_tokenization_spaces=False
             )
-
-        print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: gen_strs", gen_strs, self.debug_mode)
         return gen_strs
 
 def print_debug(f, header, value, debug_mode = False):
