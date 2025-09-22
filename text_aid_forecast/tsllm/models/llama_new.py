@@ -122,7 +122,8 @@ class LLAMAmodel(torch.nn.Module):
             print_debug(my_print, "LLAMAmodel:forecast: max_tokens", max_tokens, self.debug_mode)
             print_debug(my_print, "LLAMAmodel:forecast: temp", temp,self.debug_mode)
             print_debug(my_print, "LLAMAmodel:forecast: top_p", top_p,self.debug_mode)
-            print_debug(my_print, "LLAMAmodel:forecast: bad_words_ids", [[t] for t in bad_tokens],self.debug_mode)
+            array_bad_tokens = [[t] for t in bad_tokens]
+            print_debug(my_print, "LLAMAmodel:forecast: bad_words_ids", array_bad_tokens[0:3] ,self.debug_mode)
             generate_ids = model.generate(
                 **batch,
                 do_sample=True,
