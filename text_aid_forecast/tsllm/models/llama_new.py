@@ -117,7 +117,12 @@ class LLAMAmodel(torch.nn.Module):
             good_tokens = [tokenizer.convert_tokens_to_ids(token) for token in good_tokens_str]
             # good_tokens += [tokenizer.eos_token_id]
             bad_tokens = [i for i in range(len(tokenizer)) if i not in good_tokens]
-            print_debug(my_print, "LLAMAmodel:forecast: bad_tokens", bad_tokens, self.debug_mode)
+            # print_debug(my_print, "LLAMAmodel:forecast: bad_tokens shape", bad_tokens, self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: batch input", batch, self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: max_tokens", max_tokens, self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: temp", temp,self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: top_p", top_p,self.debug_mode)
+            print_debug(my_print, "LLAMAmodel:forecast: bad_words_ids", [[t] for t in bad_tokens],self.debug_mode)
             generate_ids = model.generate(
                 **batch,
                 do_sample=True,
