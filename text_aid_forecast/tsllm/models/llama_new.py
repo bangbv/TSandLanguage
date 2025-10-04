@@ -169,34 +169,19 @@ class LLAMAmodel(torch.nn.Module):
     def run(self, input_str, input_trend_str, input_season_str, input_resid_str, description, steps, config, batch_size, num_samples, temp):
         model_name = config.model.model_name
         settings = config.model.settings
-        if self.task == 'forecast':
-            return self.forecast(model_name, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp)
-
-    def forecast(self, model_name, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9, cache_model=True):
-        # debug_mode = self.debug_mode
-        debug_mode = True
-        print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",input_trend_str, debug_mode)
-        print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",input_season_str, debug_mode)
-        print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",input_resid_str, debug_mode)
-        print_debug(my_print, "LLAMAModelNew:forecast:use_embeddings:", self.use_embeddings, debug_mode)
-        debug_mode = False
-
-        model, tokenizer = self.load_model_and_tokenizer(model_name, cache_model=cache_model)
-
-        # Use embedding vectors if enabled, otherwise use traditional tokenization
-        if self.use_embeddings:
-            return self._forecast_with_embeddings(model, tokenizer, input_str, input_trend_str,
-                                                input_season_str, input_resid_str, steps,
-                                                settings, batch_size, num_samples, temp, top_p)
+        if self.task == 'forecast' and self.use_embeddings:
+            return self.forecast_with_embeddings(model_name, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp)
         else:
-            return self._forecast_with_tokens(model, tokenizer, input_str, input_trend_str,
-                                            input_season_str, input_resid_str, steps,
-                                            settings, batch_size, num_samples, temp, top_p)
+            return self.forecast_with_tokens(model_name, input_str, input_trend_str,input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp)
 
-    def _forecast_with_embeddings(self, model, tokenizer, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp, top_p):
+
+    def forecast_with_embeddings(self, model, tokenizer, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp, top_p):
         """Forecast using embedding vectors instead of tokenized text."""
         print_debug(my_print, "LLAMAmodel:_forecast_with_embeddings:starting", "embedding-based forecasting", self.debug_mode)
-
+        print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",input_trend_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",input_season_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",input_resid_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:use_embeddings:", self.use_embeddings, self.debug_mode)
         # Convert time series to embedding vectors
         embeddings = self.convert_time_series_to_embeddings(input_str, input_trend_str, input_season_str, input_resid_str)
         embeddings = embeddings.cuda()  # Move to GPU
@@ -277,11 +262,18 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value", pred_str[:50], self.debug_mode)
         return pred_str
 
-    def _forecast_with_tokens(self, model, tokenizer, input_str, input_trend_str, input_season_str, input_resid_str, steps, settings, batch_size, num_samples, temp, top_p):
+    def forecast_with_tokens(self, model_name,
+        input_str, input_trend_str, input_season_str, input_resid_str,
+        steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9,
+        cache_model=True):
         """Original tokenization-based forecasting method."""
+        print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",input_trend_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",input_season_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",input_resid_str, self.debug_mode)
+        print_debug(my_print, "LLAMAModelNew:forecast:use_embeddings:", self.use_embeddings, self.debug_mode)
         avg_tokens_per_step = len(self.tokenize_fn(input_str, self.model_name)['input_ids']) / len(input_str.split(settings.time_sep))
         max_tokens = int(avg_tokens_per_step * steps)
-
+        model, tokenizer = self.load_model_and_tokenizer(model_name,cache_model=cache_model)
         print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:model name", "model name:", self.debug_mode)
         print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:finish load_model_and_tokenizer", tokenizer, self.debug_mode)
         gen_strs = []
