@@ -179,7 +179,7 @@ class LLAMAmodel(torch.nn.Module):
   def tokenize_fn(self, str, model_name):
     print_debug(my_print, "LLAMAmodel:tokenize_fn:model_name:", model_name,
                 self.debug_mode)
-    tokenizer = self.load_tokenizer(model_name)
+    tokenizer = self.get_tokenizer(model_name)
     return tokenizer(str)
 
   def run(self, input_str, input_trend_str, input_season_str, input_resid_str,
