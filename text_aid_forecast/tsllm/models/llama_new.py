@@ -40,15 +40,21 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print, "LLAMAmodel:get_tokenizer:model_name:", model_name,
                 self.debug_mode)
     name_parts = model_name.split("-")
+    print_debug(my_print, "LLAMAmodel:get_tokenizer:name_parts:", name_parts,
+                self.debug_mode)
     model_size = name_parts[0]
+    print_debug(my_print, "LLAMAmodel:get_tokenizer:model_size:", model_size,
+                self.debug_mode)
     chat = len(name_parts) > 1
     assert model_size in ["7b", "13b", "70b"]
-
+    print_debug(my_print, "LLAMAmodel:get_tokenizer:chat:", chat,
+                self.debug_mode)
     tokenizer = LlamaTokenizer.from_pretrained(
         self.llama_model_string(model_size, chat),
         use_fast=False,
     )
-
+    print_debug(my_print, "LLAMAmodel:get_tokenizer:", "finish init tokenizer",
+                self.debug_mode)
     special_tokens_dict = dict()
     if tokenizer.eos_token is None:
       special_tokens_dict["eos_token"] = self.DEFAULT_EOS_TOKEN
@@ -329,7 +335,7 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print, "LLAMAModelNew:forecast_with_tokens:use_embeddings:",
                 self.use_embeddings, self.debug_mode)
     avg_tokens_per_step = len(
-        self.tokenize_fn(input_str, self.model_name)['input_ids']) / len(
+        self.tokenize_fn(input_str, model_name)['input_ids']) / len(
       input_str.split(settings.time_sep))
     max_tokens = int(avg_tokens_per_step * steps)
     model, tokenizer = self.get_model_and_tokenizer(model_name,
