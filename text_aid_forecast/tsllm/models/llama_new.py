@@ -67,8 +67,12 @@ class LLAMAmodel(torch.nn.Module):
     tokenizer.pad_token = tokenizer.eos_token
     return tokenizer
 
-  def convert_time_series_to_embeddings(self, input_str, input_trend_str,
-      input_season_str, input_resid_str, description=""):
+  def convert_time_series_to_embeddings(self,
+      input_arr,
+      input_trend_arr,
+      input_season_arr,
+      input_resid_arr,
+      description=""):
     """
     Convert time series input strings to embedding vectors.
 
@@ -83,15 +87,17 @@ class LLAMAmodel(torch.nn.Module):
         torch.Tensor: Embedding vector of shape [batch_size, seq_len, embedding_dim]
     """
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_str",
-                input_str[:100], self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_arr[:100], self.debug_mode)
 
     # Parse numerical values from strings
-    main_values = self._parse_time_series_string(input_str)
-    trend_values = self._parse_time_series_string(input_trend_str)
-    season_values = self._parse_time_series_string(input_season_str)
-    resid_values = self._parse_time_series_string(input_resid_str)
-
+    # main_values = self._parse_time_series_string(input_str)
+    # trend_values = self._parse_time_series_string(input_trend_str)
+    # season_values = self._parse_time_series_string(input_season_str)
+    # resid_values = self._parse_time_series_string(input_resid_str)
+    main_values = input_arr
+    trend_values = input_trend_arr
+    season_values = input_season_arr
+    resid_values = input_resid_arr
     # Ensure all components have the same length
     min_length = min(len(main_values), len(trend_values), len(season_values),
                      len(resid_values))
@@ -134,6 +140,8 @@ class LLAMAmodel(torch.nn.Module):
 
   def _parse_time_series_string(self, ts_string):
     """Parse time series string to numerical values."""
+    print_debug(my_print, "LLAMAmodel:_parse_time_series_string:ts_string",
+                ts_string, self.debug_mode)
     try:
       # Split by comma and convert to float
       values = [float(x.strip()) for x in ts_string.split(',') if x.strip()]
@@ -188,14 +196,21 @@ class LLAMAmodel(torch.nn.Module):
     tokenizer = self.get_tokenizer(model_name)
     return tokenizer(str)
 
-  def run(self, input_str, input_trend_str, input_season_str, input_resid_str,
-      description, steps, config, batch_size, num_samples, temp):
+  def run(self,
+      input_arr, input_str,
+      input_trend_arr, input_trend_str,
+      input_season_arr, input_season_str,
+      input_resid_arr, input_resid_str,
+      description, steps, config, batch_size, num_samples, temp
+  ):
     model_name = config.model.model_name
     settings = config.model.settings
     if self.task == 'forecast' and self.use_embeddings:
       return self.forecast_with_embeddings(model_name,
-                                           input_str, input_trend_str,
-                                           input_season_str, input_resid_str,
+                                           input_arr, input_str,
+                                           input_trend_arr, input_trend_str,
+                                           input_season_arr, input_season_str,
+                                           input_resid_arr, input_resid_str,
                                            steps, settings, batch_size,
                                            num_samples, temp
                                            )
@@ -208,7 +223,10 @@ class LLAMAmodel(torch.nn.Module):
                                        )
 
   def forecast_with_embeddings(self, model_name,
-      input_str, input_trend_str, input_season_str, input_resid_str,
+      input_arr, input_str,
+      input_trend_arr, input_trend_str,
+      input_season_arr, input_season_str,
+      input_resid_arr, input_resid_str,
       steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9,
       cache_model=True):
     """Forecast using embedding vectors instead of tokenized text."""
@@ -225,10 +243,11 @@ class LLAMAmodel(torch.nn.Module):
     model, tokenizer = self.get_model_and_tokenizer(model_name,
                                                     cache_model=cache_model)
     # Convert time series to embedding vectors
-    embeddings = self.convert_time_series_to_embeddings(input_str,
-                                                        input_trend_str,
-                                                        input_season_str,
-                                                        input_resid_str)
+    embeddings = self.convert_time_series_to_embeddings(input_arr,
+                                                        input_trend_arr,
+                                                        input_season_arr,
+                                                        input_resid_arr
+                                                        )
     embeddings = embeddings.cuda()  # Move to GPU
 
     gen_strs = []
@@ -239,8 +258,7 @@ class LLAMAmodel(torch.nn.Module):
 
     for _ in tqdm(range(num_samples // batch_size)):
       # Repeat embeddings for batch processing
-      batch_embeddings = embeddings.repeat(batch_size, 1,
-                                           1)  # [batch_size, seq_len, embedding_dim]
+      batch_embeddings = embeddings.repeat(batch_size, 1,1)  # [batch_size, seq_len, embedding_dim]
 
       # Generate predictions using the model with embedding inputs
       with torch.no_grad():

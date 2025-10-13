@@ -8,7 +8,7 @@ top_p: 0.8
 context_lengths: 4096 # All llama context length is 4096. GPT is 4097
 
 # Embedding vector configuration
-use_embeddings: False  # Set to True to use embedding vectors instead of tokenization
+use_embeddings: True  # Set to True to use embedding vectors instead of tokenization
 embedding_dim: 4096    # Embedding dimension (should match LLaMA hidden size)
 max_sequence_length: 512  # Maximum sequence length for embeddings
 settings: 

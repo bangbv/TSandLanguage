@@ -37,13 +37,26 @@ def get_output_format(preds , test , results_list , model_name , input_strs ):
     }
     return out_dict
 
-def get_predict_results(model , input_strs,trend_strs, season_strs, resid_strs,  test, description, config, batch_size, num_samples, scalers=None ):
+def get_predict_results(model ,
+    input_arrs, input_strs,
+    trend_arrs, trend_strs,
+    season_arrs, season_strs,
+    resid_arrs, resid_strs,
+    test, description, config, batch_size, num_samples, scalers=None
+):
     print_debug(my_print, "utils_llama:get_predict_results:model", model, True)
     debug_node = config.debug_mode
     results_list = []
     batch_preds = []
-    for input_str in tqdm(input_strs):
-        res = model.run(input_str, trend_strs, season_strs, resid_strs , description , config.model.test_len*STEP_MULTIPLIER , config, batch_size ,num_samples , config.model.temp )
+    for input_arr, input_str, trend_arr, trend_str, season_arr, season_str, resid_arr, resid_str \
+        in tqdm(zip(input_arrs, input_strs, trend_arrs, trend_strs, season_arrs, season_strs, resid_arrs, resid_strs)):
+        res = model.run(
+            input_arr, input_str,
+            trend_arr, trend_str,
+            season_arr, season_str,
+            resid_arr, resid_str,
+            description , config.model.test_len*STEP_MULTIPLIER , config, batch_size ,num_samples , config.model.temp
+        )
         print_debug(my_print, "utils: get_predict_results: run: res", res[:3], debug_node)
         results_list.append(res)
 
