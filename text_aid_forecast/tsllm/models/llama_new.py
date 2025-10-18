@@ -248,7 +248,7 @@ class LLAMAmodel(torch.nn.Module):
                                                         input_season_arr,
                                                         input_resid_arr
                                                         )
-    embeddings = embeddings.cuda()  # Move to GPU
+    embeddings = embeddings.to(dtype=torch.float16, device='cuda')  # Move to GPU
 
     gen_strs = []
     print_debug(my_print, "LLAMAmodel:_forecast_with_embeddings:num_samples:",
