@@ -257,18 +257,29 @@ class LLAMAmodel(torch.nn.Module):
                 batch_size, self.debug_mode)
 
     for _ in tqdm(range(num_samples // batch_size)):
+      print_debug(my_print, "LLAMAmodel:_forecast_with_embeddings:Repeat embeddings:",
+                  batch_size, self.debug_mode)
       # Repeat embeddings for batch processing
       batch_embeddings = embeddings.repeat(batch_size, 1,1)  # [batch_size, seq_len, embedding_dim]
-
+      print_debug(my_print, "LLAMAmodel:_forecast_with_embeddings:batch_embeddings shape:",
+                  batch_embeddings.shape, self.debug_mode)
       # Generate predictions using the model with embedding inputs
       with torch.no_grad():
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:torch.no_grad():",
+                    "forward method", self.debug_mode)
         # Use model's forward method with embedding inputs
         outputs = model(inputs_embeds=batch_embeddings, use_cache=True)
         logits = outputs.logits  # [batch_size, seq_len, vocab_size]
-
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:logits shape:",
+                    logits.shape, self.debug_mode)
         # Sample from the distribution
         predictions = self._sample_from_embeddings(logits, steps, temp, top_p,
                                                    settings, tokenizer)
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:predictions:",
+                    predictions, self.debug_mode)
 
       gen_strs.extend(predictions)
       print_debug(my_print,
@@ -332,9 +343,9 @@ class LLAMAmodel(torch.nn.Module):
 
     # Generate mock prediction in the expected format
     # This is a placeholder - you'd implement proper conversion logic
-    mock_values = np.random.normal(500, 50, steps)  # Generate some mock values
-    pred_str = ', '.join([f"{int(val)}" for val in mock_values])
-
+    # mock_values = np.random.normal(500, 50, steps)  # Generate some mock values
+    # pred_str = ', '.join([f"{int(val)}" for val in mock_values])
+    pred_str = token_str
     print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value",
                 pred_str[:50], self.debug_mode)
     return pred_str
