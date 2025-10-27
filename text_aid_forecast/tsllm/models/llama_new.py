@@ -89,11 +89,6 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_arr[:100], self.debug_mode)
 
-    # Parse numerical values from strings
-    # main_values = self._parse_time_series_string(input_str)
-    # trend_values = self._parse_time_series_string(input_trend_str)
-    # season_values = self._parse_time_series_string(input_season_str)
-    # resid_values = self._parse_time_series_string(input_resid_str)
     main_values = input_arr
     trend_values = input_trend_arr
     season_values = input_season_arr
