@@ -26,7 +26,7 @@ def ori_scale_pre_processing(train, test , config ):
     input_strs = ori_scale_serialize(input_arrs) 
     return None, input_strs , [None]*len(input_strs) , test
     
-def rescale_pre_processing(train, test, describtions , config , tokenizer, debug_node=False ):
+def rescale_pre_processing(train, test, descriptions , config , tokenizer, debug_node=False ):
     '''
         Note that : 
         This script references https://github.com/ngruver/llmtime and https://arxiv.org/pdf/2310.07820.pdf. Thank you for your work.
@@ -36,7 +36,7 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     if not isinstance(train, list):
         train = [train]
         test = [test]
-        describtions = [describtions]
+        descriptions = [descriptions]
     
     with open_dict(config):
         config.model.test_len = len(test[0])
@@ -110,10 +110,10 @@ def rescale_pre_processing(train, test, describtions , config , tokenizer, debug
     input_resid_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_resid_arrs]
 
     truncated_input_arrs, truncated_input_strs = zip(*[
-      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , describtions )
+      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_arrs, input_strs , descriptions )
     ]) # truncate input to fit the model's maximum context length
     truncated_trend_arrs, truncated_trend_strs = zip(*[
-      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_trend_arrs, input_trend_strs , describtions )
+      truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_trend_arrs, input_trend_strs , descriptions )
     ])
     truncated_season_arrs, truncated_season_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_season_arrs, input_season_strs , describtions )])
     truncated_resid_arrs, truncated_resid_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , describtions )])

@@ -79,7 +79,7 @@ def vec_repr2num(sign, digits, base, prec, half_bin_correction=True):
 def serialize_arr(arr, settings: dict):
     print(f"serialize:serialize_arr: arr={arr}, settings={settings}")
     """
-    Serialize an array of numbers (a time series) into a string based on the provided settings['
+    Serialize an array of numbers (a time series) into a string based on the provided settings'
     
     Parameters:
     - arr (np.array): Array of numbers to serialize.
