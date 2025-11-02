@@ -94,6 +94,8 @@ class LLAMAmodel(torch.nn.Module):
     input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")
     input_season_batch = tokenizer([input_season_str],return_tensors="pt")
     input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:input_batch", input_batch, self.debug_mode)
     # main_values = input_arr
     # trend_values = input_trend_arr
     # season_values = input_season_arr
@@ -120,16 +122,19 @@ class LLAMAmodel(torch.nn.Module):
       input_season_batch,
       input_resid_batch
     ], dtype=torch.float32).T  # Shape: [seq_len, 4]
-
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:time_series_matrix shape:", time_series_matrix.shape, self.debug_mode)
     # Project to embedding dimension using a linear transformation
     # This creates a learnable mapping from 4D time series features to embedding_dim
     projection_layer = torch.nn.Linear(4, self.embedding_dim, bias=True)
     embeddings = projection_layer(
       time_series_matrix)  # Shape: [seq_len, embedding_dim]
-
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:embeddings shape", embeddings.shape, self.debug_mode)
     # Add positional encoding
     embeddings = self._add_positional_encoding(embeddings)
-
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:embeddings after positional encoding", embeddings.shape, self.debug_mode)
     # Add batch dimension: [1, seq_len, embedding_dim]
     embeddings = embeddings.unsqueeze(0)
 
