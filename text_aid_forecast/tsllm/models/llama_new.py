@@ -88,7 +88,7 @@ class LLAMAmodel(torch.nn.Module):
         torch.Tensor: Embedding vector of shape [batch_size, seq_len, embedding_dim]
     """
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_arr[:100], self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_str, self.debug_mode)
 
     input_batch = tokenizer([input_str],return_tensors="pt")
     input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")
