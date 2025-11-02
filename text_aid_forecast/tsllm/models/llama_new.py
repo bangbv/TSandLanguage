@@ -68,10 +68,11 @@ class LLAMAmodel(torch.nn.Module):
     return tokenizer
 
   def convert_time_series_to_embeddings(self,
-      input_arr,
-      input_trend_arr,
-      input_season_arr,
-      input_resid_arr,
+      model, tokenizer,
+      input_str,
+      input_trend_str,
+      input_season_str,
+      input_resid_str,
       description=""):
     """
     Convert time series input strings to embedding vectors.
@@ -89,31 +90,35 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_arr[:100], self.debug_mode)
 
-    main_values = input_arr
-    trend_values = input_trend_arr
-    season_values = input_season_arr
-    resid_values = input_resid_arr
+    input_batch = tokenizer([input_str],return_tensors="pt")
+    input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")
+    input_season_batch = tokenizer([input_season_str],return_tensors="pt")
+    input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")
+    # main_values = input_arr
+    # trend_values = input_trend_arr
+    # season_values = input_season_arr
+    # resid_values = input_resid_arr
     # Ensure all components have the same length
-    min_length = min(len(main_values), len(trend_values), len(season_values),
-                     len(resid_values))
-    main_values = main_values[:min_length]
-    trend_values = trend_values[:min_length]
-    season_values = season_values[:min_length]
-    resid_values = resid_values[:min_length]
+    # min_length = min(len(main_values), len(trend_values), len(season_values),
+    #                  len(resid_values))
+    # main_values = main_values[:min_length]
+    # trend_values = trend_values[:min_length]
+    # season_values = season_values[:min_length]
+    # resid_values = resid_values[:min_length]
 
     # Limit to max sequence length
-    if len(main_values) > self.max_sequence_length:
-      main_values = main_values[-self.max_sequence_length:]
-      trend_values = trend_values[-self.max_sequence_length:]
-      season_values = season_values[-self.max_sequence_length:]
-      resid_values = resid_values[-self.max_sequence_length:]
+    # if len(main_values) > self.max_sequence_length:
+    #   main_values = main_values[-self.max_sequence_length:]
+    #   trend_values = trend_values[-self.max_sequence_length:]
+    #   season_values = season_values[-self.max_sequence_length:]
+    #   resid_values = resid_values[-self.max_sequence_length:]
 
     # Create embedding matrix: [seq_len, 4] for the 4 components
     time_series_matrix = torch.tensor([
-      main_values,
-      trend_values,
-      season_values,
-      resid_values
+      input_batch,
+      input_trend_batch,
+      input_season_batch,
+      input_resid_batch
     ], dtype=torch.float32).T  # Shape: [seq_len, 4]
 
     # Project to embedding dimension using a linear transformation
@@ -192,20 +197,20 @@ class LLAMAmodel(torch.nn.Module):
     return tokenizer(str)
 
   def run(self,
-      input_arr, input_str,
-      input_trend_arr, input_trend_str,
-      input_season_arr, input_season_str,
-      input_resid_arr, input_resid_str,
+      input_str,
+      input_trend_str,
+      input_season_str,
+      input_resid_str,
       description, steps, config, batch_size, num_samples, temp
   ):
     model_name = config.model.model_name
     settings = config.model.settings
     if self.task == 'forecast' and self.use_embeddings:
       return self.forecast_with_embeddings(model_name,
-                                           input_arr, input_str,
-                                           input_trend_arr, input_trend_str,
-                                           input_season_arr, input_season_str,
-                                           input_resid_arr, input_resid_str,
+                                           input_str,
+                                           input_trend_str,
+                                           input_season_str,
+                                           input_resid_str,
                                            steps, settings, batch_size,
                                            num_samples, temp
                                            )
@@ -218,10 +223,10 @@ class LLAMAmodel(torch.nn.Module):
                                        )
 
   def forecast_with_embeddings(self, model_name,
-      input_arr, input_str,
-      input_trend_arr, input_trend_str,
-      input_season_arr, input_season_str,
-      input_resid_arr, input_resid_str,
+      input_str,
+      input_trend_str,
+      input_season_str,
+      input_resid_str,
       steps, settings, batch_size=5, num_samples=20, temp=0.9, top_p=0.9,
       cache_model=True):
     """Forecast using embedding vectors instead of tokenized text."""
@@ -238,10 +243,10 @@ class LLAMAmodel(torch.nn.Module):
     model, tokenizer = self.get_model_and_tokenizer(model_name,
                                                     cache_model=cache_model)
     # Convert time series to embedding vectors
-    embeddings = self.convert_time_series_to_embeddings(input_arr,
-                                                        input_trend_arr,
-                                                        input_season_arr,
-                                                        input_resid_arr
+    embeddings = self.convert_time_series_to_embeddings(model, tokenizer, input_str,
+                                                        input_trend_str,
+                                                        input_season_str,
+                                                        input_resid_str
                                                         )
     embeddings = embeddings.to(dtype=torch.float16, device='cuda')  # Move to GPU
 
@@ -287,6 +292,7 @@ class LLAMAmodel(torch.nn.Module):
 
   def _sample_from_embeddings(self, logits, steps, temp, top_p, settings,
       tokenizer):
+    print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:","start", self.debug_mode)
     """Sample predictions from logits generated by embedding inputs."""
     batch_size = logits.shape[0]
     predictions = []
@@ -316,33 +322,38 @@ class LLAMAmodel(torch.nn.Module):
     # Sample from the filtered distribution
     probs = F.softmax(last_logits, dim=-1)
     sampled_tokens = torch.multinomial(probs, num_samples=1)  # [batch_size, 1]
-
+    print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:sampled_tokens",sampled_tokens, self.debug_mode)
     # Convert to strings (this is a simplified approach)
     # In practice, you'd want more sophisticated conversion from tokens to time series values
     for i in range(batch_size):
       token_id = sampled_tokens[i].item()
+      print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:token_id",
+                  token_id, self.debug_mode)
       # Convert token back to numerical value (simplified)
       # This would need proper implementation based on your tokenizer
       pred_str = self._convert_token_to_timeseries_value(token_id, tokenizer,
                                                          steps, settings)
+      print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:pred_str",
+                  pred_str, self.debug_mode)
       predictions.append(pred_str)
 
     return predictions
 
   def _convert_token_to_timeseries_value(self, token_id, tokenizer, steps,
       settings):
+    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:",
+                "start", self.debug_mode)
     """Convert sampled token back to time series format."""
     # Simplified conversion - in practice, you'd need proper reverse engineering
     # of your serialization format
     token_str = tokenizer.decode([token_id])
-
+    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_str",
+                token_str, self.debug_mode)
     # Generate mock prediction in the expected format
     # This is a placeholder - you'd implement proper conversion logic
-    # mock_values = np.random.normal(500, 50, steps)  # Generate some mock values
-    # pred_str = ', '.join([f"{int(val)}" for val in mock_values])
-    pred_str = token_str
-    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value",
-                pred_str[:50], self.debug_mode)
+    pred_str = ', '.join([f"{int(val)}" for val in token_str])
+    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:pred_str",
+                pred_str, self.debug_mode)
     return pred_str
 
   def forecast_with_tokens(self, model_name,

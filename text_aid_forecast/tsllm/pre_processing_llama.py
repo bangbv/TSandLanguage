@@ -115,9 +115,9 @@ def rescale_pre_processing(train, test, descriptions , config , tokenizer, debug
     truncated_trend_arrs, truncated_trend_strs = zip(*[
       truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_trend_arrs, input_trend_strs , descriptions )
     ])
-    truncated_season_arrs, truncated_season_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_season_arrs, input_season_strs , describtions )])
-    truncated_resid_arrs, truncated_resid_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , describtions )])
+    truncated_season_arrs, truncated_season_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str, description in zip(input_season_arrs, input_season_strs , descriptions )])
+    truncated_resid_arrs, truncated_resid_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , descriptions )])
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_trend_arr:", truncated_trend_arrs, debug_node)
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_season_arr:", truncated_season_arrs, debug_node)
     print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_resid_arr:", truncated_resid_arrs, debug_node)
-    return truncated_input_arrs, truncated_input_strs , scalers , test, truncated_trend_arrs, truncated_trend_strs, truncated_season_arrs, truncated_season_strs, truncated_resid_arrs, truncated_resid_strs
+    return truncated_input_arrs, truncated_input_strs , scalers , test, truncated_trend_strs, truncated_season_strs, truncated_resid_strs
