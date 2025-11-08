@@ -90,12 +90,14 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_str, self.debug_mode)
 
-    input_batch = tokenizer([input_str],return_tensors="pt")
+    input_batch = tokenizer([input_str],return_tensors="pt",)
     input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")
     input_season_batch = tokenizer([input_season_str],return_tensors="pt")
     input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_batch", input_batch, self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch, self.debug_mode)
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:input_resid_batch", input_resid_batch, self.debug_mode)
     # main_values = input_arr
     # trend_values = input_trend_arr
     # season_values = input_season_arr
@@ -114,13 +116,15 @@ class LLAMAmodel(torch.nn.Module):
     #   trend_values = trend_values[-self.max_sequence_length:]
     #   season_values = season_values[-self.max_sequence_length:]
     #   resid_values = resid_values[-self.max_sequence_length:]
-
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:", "finish tokenizer", self.debug_mode)
     # Create embedding matrix: [seq_len, 4] for the 4 components
+    # Extract input_ids from BatchEncoding objects and convert to float
     time_series_matrix = torch.tensor([
-      input_batch,
-      input_trend_batch,
-      input_season_batch,
-      input_resid_batch
+      input_batch['input_ids'].squeeze().tolist(),
+      input_trend_batch['input_ids'].squeeze().tolist(),
+      input_season_batch['input_ids'].squeeze().tolist(),
+      input_resid_batch['input_ids'].squeeze().tolist()
     ], dtype=torch.float32).T  # Shape: [seq_len, 4]
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:time_series_matrix shape:", time_series_matrix.shape, self.debug_mode)
