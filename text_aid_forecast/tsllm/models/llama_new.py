@@ -90,10 +90,10 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_str, self.debug_mode)
 
-    input_batch = tokenizer([input_str],return_tensors="pt",)['input_ids']
-    input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")['input_ids']
-    input_season_batch = tokenizer([input_season_str],return_tensors="pt")['input_ids']
-    input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")['input_ids']
+    input_batch = tokenizer([input_str],return_tensors="pt",)['input_ids'].squeeze().tolist()
+    input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")['input_ids'].squeeze().tolist()
+    input_season_batch = tokenizer([input_season_str],return_tensors="pt")['input_ids'].squeeze().tolist()
+    input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")['input_ids'].squeeze().tolist()
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch, self.debug_mode)
     print_debug(my_print,
