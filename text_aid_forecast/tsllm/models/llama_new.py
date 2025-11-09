@@ -90,10 +90,10 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_str", input_str, self.debug_mode)
 
-    input_batch = tokenizer([input_str],return_tensors="pt",)
-    input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")
-    input_season_batch = tokenizer([input_season_str],return_tensors="pt")
-    input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")
+    input_batch = tokenizer([input_str],return_tensors="pt",)['input_ids']
+    input_trend_batch = tokenizer([input_trend_str],return_tensors="pt")['input_ids']
+    input_season_batch = tokenizer([input_season_str],return_tensors="pt")['input_ids']
+    input_resid_batch = tokenizer([input_resid_str],return_tensors="pt")['input_ids']
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch, self.debug_mode)
     print_debug(my_print,
@@ -103,28 +103,28 @@ class LLAMAmodel(torch.nn.Module):
     # season_values = input_season_arr
     # resid_values = input_resid_arr
     # Ensure all components have the same length
-    # min_length = min(len(main_values), len(trend_values), len(season_values),
-    #                  len(resid_values))
-    # main_values = main_values[:min_length]
-    # trend_values = trend_values[:min_length]
-    # season_values = season_values[:min_length]
-    # resid_values = resid_values[:min_length]
+    min_length = min(len(input_batch), len(input_trend_batch), len(input_season_batch),
+                     len(input_resid_batch))
+    main_values = input_batch[:min_length]
+    trend_values = input_trend_batch[:min_length]
+    season_values = input_season_batch[:min_length]
+    resid_values = input_resid_batch[:min_length]
 
     # Limit to max sequence length
-    # if len(main_values) > self.max_sequence_length:
-    #   main_values = main_values[-self.max_sequence_length:]
-    #   trend_values = trend_values[-self.max_sequence_length:]
-    #   season_values = season_values[-self.max_sequence_length:]
-    #   resid_values = resid_values[-self.max_sequence_length:]
+    if len(main_values) > self.max_sequence_length:
+      main_values = main_values[-self.max_sequence_length:]
+      trend_values = trend_values[-self.max_sequence_length:]
+      season_values = season_values[-self.max_sequence_length:]
+      resid_values = resid_values[-self.max_sequence_length:]
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:", "finish tokenizer", self.debug_mode)
     # Create embedding matrix: [seq_len, 4] for the 4 components
     # Extract input_ids from BatchEncoding objects and convert to float
     time_series_matrix = torch.tensor([
-      input_batch['input_ids'].squeeze().tolist(),
-      input_trend_batch['input_ids'].squeeze().tolist(),
-      input_season_batch['input_ids'].squeeze().tolist(),
-      input_resid_batch['input_ids'].squeeze().tolist()
+      main_values,
+      trend_values,
+      season_values,
+      resid_values
     ], dtype=torch.float32).T  # Shape: [seq_len, 4]
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:time_series_matrix shape:", time_series_matrix.shape, self.debug_mode)
