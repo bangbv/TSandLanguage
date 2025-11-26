@@ -297,6 +297,16 @@ class LLAMAmodel(torch.nn.Module):
         # Sample from the distribution
         generation_ids = self._sample_from_embeddings(logits, steps, temp, top_p,
                                                    settings, tokenizer)
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:generation_ids:",
+                    generation_ids, self.debug_mode)
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:num_input_ids:",
+                    num_input_ids, self.debug_mode)
+        generation_result = generation_ids[:, num_input_ids:]
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:generation_result:",
+                    generation_result, self.debug_mode)
         predictions = tokenizer.batch_decode(
             generation_ids[:, num_input_ids:],
             skip_special_tokens=True,
