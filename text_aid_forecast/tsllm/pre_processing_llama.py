@@ -70,9 +70,10 @@ def rescale_pre_processing(train, test, descriptions , config , tokenizer, debug
         transform     : (x - min_) / q
         inv_transform : x * q + min_ 
     '''
+    input_ft_arrs = []
     if config.is_fourier:
-        input_arrs = ft.fourier_transform(input_arrs)
-        print_debug(my_print, "pre_processing_llama: rescale_pre_processing: fourier_transform:input_ft_arrs:", input_arrs, debug_node)
+        input_ft_arrs = ft.fourier_transform(input_arrs)
+        print_debug(my_print, "pre_processing_llama: rescale_pre_processing: fourier_transform:input_ft_arrs:", input_ft_arrs, debug_node)
 
     print_debug(my_print,"pre_processing_llama: rescale_pre_processing: default input_arrs:",input_arrs, debug_node)
     transformed_input_arrs = np.array([scaler.transform(input_array) for input_array, scaler in zip(input_arrs, scalers)])
@@ -102,10 +103,11 @@ def rescale_pre_processing(train, test, descriptions , config , tokenizer, debug
     input_strs = [
       serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_input_arrs
     ] # convert np.array to str
+    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: serialize_arr:input_strs:", input_strs, debug_node)
     input_trend_strs = [
       serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_trend_arrs
     ]
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: serialize_arr:input_trend_strs:", input_trend_strs, debug_node)
+    # print_debug(my_print, "pre_processing_llama:rescale_pre_processing: serialize_arr:input_trend_strs:", input_trend_strs, debug_node)
     input_season_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_season_arrs]
     input_resid_strs = [serialize_arr(scaled_input_arr, config.model.settings) for scaled_input_arr in transformed_resid_arrs]
 
@@ -117,7 +119,9 @@ def rescale_pre_processing(train, test, descriptions , config , tokenizer, debug
     ])
     truncated_season_arrs, truncated_season_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str, description in zip(input_season_arrs, input_season_strs , descriptions )])
     truncated_resid_arrs, truncated_resid_strs = zip(*[truncate_input(input_array, input_str, description, config , tokenizer ) for input_array, input_str ,description in zip(input_resid_arrs, input_resid_strs , descriptions )])
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_trend_arr:", truncated_trend_arrs, debug_node)
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_season_arr:", truncated_season_arrs, debug_node)
-    print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_resid_arr:", truncated_resid_arrs, debug_node)
+    print_debug(my_print,"pre_processing_llama:rescale_pre_processing: truncated_input_arrs:",truncated_input_arrs, debug_node)
+    print_debug(my_print,"pre_processing_llama:rescale_pre_processing: truncated_input_strs:",truncated_input_strs, debug_node)
+    # print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_trend_arr:", truncated_trend_arrs, debug_node)
+    # print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_season_arr:", truncated_season_arrs, debug_node)
+    # print_debug(my_print, "pre_processing_llama:rescale_pre_processing: truncated_resid_arr:", truncated_resid_arrs, debug_node)
     return truncated_input_arrs, truncated_input_strs , scalers , test, truncated_trend_strs, truncated_season_strs, truncated_resid_strs

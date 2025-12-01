@@ -128,9 +128,9 @@ class LLAMAmodel(torch.nn.Module):
     # Extract input_ids from BatchEncoding objects and convert to float
     time_series_matrix = torch.tensor([
       main_values,
-      trend_values,
-      season_values,
-      resid_values
+      # trend_values,
+      # season_values,
+      # resid_values
     ], dtype=torch.float32).T  # Shape: [seq_len, 4]
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:time_series_matrix shape:", time_series_matrix.shape, self.debug_mode)
@@ -247,14 +247,16 @@ class LLAMAmodel(torch.nn.Module):
     """Forecast using embedding vectors instead of tokenized text."""
     print_debug(my_print, "LLAMAmodel:_forecast_with_embeddings:starting",
                 "embedding-based forecasting", self.debug_mode)
-    print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",
-                input_trend_str, self.debug_mode)
-    print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",
-                input_season_str, self.debug_mode)
-    print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",
-                input_resid_str, self.debug_mode)
-    print_debug(my_print, "LLAMAModelNew:forecast:use_embeddings:",
-                self.use_embeddings, self.debug_mode)
+    print_debug(my_print, "LLAMAModelNew:forecast:input_str:",
+                input_str, self.debug_mode)
+    # print_debug(my_print, "LLAMAModelNew:forecast:input_trend_str:",
+    #             input_trend_str, self.debug_mode)
+    # print_debug(my_print, "LLAMAModelNew:forecast:input_season_str:",
+    #             input_season_str, self.debug_mode)
+    # print_debug(my_print, "LLAMAModelNew:forecast:input_resid_str:",
+    #             input_resid_str, self.debug_mode)
+    # print_debug(my_print, "LLAMAModelNew:forecast:use_embeddings:",
+    #             self.use_embeddings, self.debug_mode)
     model, tokenizer = self.get_model_and_tokenizer(model_name,
                                                     cache_model=cache_model)
 
@@ -263,7 +265,9 @@ class LLAMAmodel(torch.nn.Module):
     num_input_ids = input_tokens.shape[1]
 
     # Convert time series to embedding vectors
-    embeddings = self.convert_time_series_to_embeddings(model, tokenizer, input_str,
+    embeddings = self.convert_time_series_to_embeddings(model,
+                                                        tokenizer,
+                                                        input_str,
                                                         input_trend_str,
                                                         input_season_str,
                                                         input_resid_str
