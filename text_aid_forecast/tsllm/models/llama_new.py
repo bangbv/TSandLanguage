@@ -106,8 +106,8 @@ class LLAMAmodel(torch.nn.Module):
     input_resid_batch = input_resid_batch_tensor.squeeze().tolist()
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch, self.debug_mode)
-    print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_resid_batch", input_resid_batch, self.debug_mode)
+    # print_debug(my_print,
+    #             "LLAMAmodel:convert_time_series_to_embeddings:input_resid_batch", input_resid_batch, self.debug_mode)
     # Ensure all components have the same length
     min_length = min(len(input_batch), len(input_trend_batch), len(input_season_batch),
                      len(input_resid_batch))
@@ -136,7 +136,7 @@ class LLAMAmodel(torch.nn.Module):
                 "LLAMAmodel:convert_time_series_to_embeddings:time_series_matrix shape:", time_series_matrix.shape, self.debug_mode)
     # Project to embedding dimension using a linear transformation
     # This creates a learnable mapping from 4D time series features to embedding_dim
-    projection_layer = torch.nn.Linear(4, self.embedding_dim, bias=True)
+    projection_layer = torch.nn.Linear(1, self.embedding_dim, bias=True)
     embeddings = projection_layer(
       time_series_matrix)  # Shape: [seq_len, embedding_dim]
     print_debug(my_print,
