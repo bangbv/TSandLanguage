@@ -105,7 +105,9 @@ class LLAMAmodel(torch.nn.Module):
     input_season_batch = input_season_batch_tensor.squeeze().tolist()
     input_resid_batch = input_resid_batch_tensor.squeeze().tolist()
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch, self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch.shape, self.debug_mode)
+    print_debug(my_print,
+                "LLAMAmodel:convert_time_series_to_embeddings:input_batch", input_batch, self.debug_mode)
     # print_debug(my_print,
     #             "LLAMAmodel:convert_time_series_to_embeddings:input_resid_batch", input_resid_batch, self.debug_mode)
     # Ensure all components have the same length
@@ -144,7 +146,7 @@ class LLAMAmodel(torch.nn.Module):
     # Add positional encoding
     embeddings = self._add_positional_encoding(embeddings)
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:embeddings after positional encoding", embeddings.shape, self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:embeddings shape after positional encoding", embeddings.shape, self.debug_mode)
     # Add batch dimension: [1, seq_len, embedding_dim]
     embeddings = embeddings.unsqueeze(0)
 
