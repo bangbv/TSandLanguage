@@ -105,7 +105,7 @@ class LLAMAmodel(torch.nn.Module):
     input_season_batch = input_season_batch_tensor.squeeze().tolist()
     input_resid_batch = input_resid_batch_tensor.squeeze().tolist()
     print_debug(my_print,
-                "LLAMAmodel:convert_time_series_to_embeddings:input_batch shape", input_batch.shape, self.debug_mode)
+                "LLAMAmodel:convert_time_series_to_embeddings:input_batch length", len(input_batch), self.debug_mode)
     print_debug(my_print,
                 "LLAMAmodel:convert_time_series_to_embeddings:input_batch", input_batch, self.debug_mode)
     # print_debug(my_print,
