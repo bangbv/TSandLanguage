@@ -296,6 +296,9 @@ class LLAMAmodel(torch.nn.Module):
                     "forward method", self.debug_mode)
         # Use model's forward method with embedding inputs
         outputs = model(inputs_embeds=batch_embeddings, use_cache=True)
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:outputs_type:",
+                    type(outputs), self.debug_mode)
         logits = outputs.logits  # [batch_size, seq_len, vocab_size]
         print_debug(my_print,
                     "LLAMAmodel:_forecast_with_embeddings:logits shape:",
