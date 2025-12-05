@@ -312,12 +312,13 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print,
                     "LLAMAmodel:_forecast_with_embeddings:num_input_ids:",
                     num_input_ids, self.debug_mode)
-        generation_result = generation_ids[:, num_input_ids:]
+        # generation_id_trunk = generation_ids[:, num_input_ids:]
+        generation_id_trunk = generation_ids
         print_debug(my_print,
-                    "LLAMAmodel:_forecast_with_embeddings:generation_result:",
-                    generation_result, self.debug_mode)
+                    "LLAMAmodel:_forecast_with_embeddings:generation_id_trunk:",
+                    generation_id_trunk, self.debug_mode)
         predictions = tokenizer.batch_decode(
-            generation_ids[:, num_input_ids:],
+            generation_id_trunk,
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False
         )
