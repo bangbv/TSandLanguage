@@ -38,7 +38,7 @@ def run(config: DictConfig):
         _ , input_strs ,  scalers , test, trend_strs, season_strs, resid_strs  = pre_processing(train, test , description , config , model.tokenizer, debug_mode )
         logger.debug({"tsllm:main_llama:run:pre_processing:input_strs": input_strs})
         try:
-            out = get_predict_results(model ,
+            out = get_predict_results(model,
                                       input_strs,
                                       trend_strs,
                                       season_strs,
