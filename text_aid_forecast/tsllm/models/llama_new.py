@@ -265,6 +265,9 @@ class LLAMAmodel(torch.nn.Module):
     # Calculate num_input_ids for later use
     input_tokens = tokenizer([input_str], return_tensors="pt")['input_ids']
     num_input_ids = input_tokens.shape[1]
+    print_debug(my_print,
+                "LLAMAmodel:_forecast_with_embeddings:num_input_ids:",
+                num_input_ids, self.debug_mode)
 
     # Convert time series to embedding vectors
     embeddings = self.convert_time_series_to_embeddings(model,
@@ -309,9 +312,6 @@ class LLAMAmodel(torch.nn.Module):
         print_debug(my_print,
                     "LLAMAmodel:_forecast_with_embeddings:generation_ids:",
                     generation_ids, self.debug_mode)
-        print_debug(my_print,
-                    "LLAMAmodel:_forecast_with_embeddings:num_input_ids:",
-                    num_input_ids, self.debug_mode)
         # generation_id_trunk = generation_ids[:, num_input_ids:]
         generation_id_trunk = generation_ids
         print_debug(my_print,
@@ -391,6 +391,17 @@ class LLAMAmodel(torch.nn.Module):
     """Convert sampled token back to time series format."""
     # Simplified conversion - in practice, you'd need proper reverse engineering
     # of your serialization format
+    if self.debug_mode:
+      input_str_test = ['989', '957', '970']
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_test",
+                  input_str_test, self.debug_mode)
+      token_id_test = tokenizer([input_str_test],
+                  return_tensors="pt",)
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test",
+                  token_id_test, self.debug_mode)
+      input_str_output_test = tokenizer.decode([token_id_test])
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
+                  input_str_output_test, self.debug_mode)
     token_str = tokenizer.decode([token_id])
     print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_str",
                 token_str, self.debug_mode)
@@ -453,13 +464,13 @@ class LLAMAmodel(torch.nn.Module):
           return_tensors="pt",
       )
 
-      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch first",
+      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch_first",
                   batch, self.debug_mode)
       batch = {k: v.repeat(batch_size, 1) for k, v in batch.items()}
-      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch dict",
+      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch_dict",
                   batch, self.debug_mode)
       batch = {k: v.cuda() for k, v in batch.items()}
-      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch third",
+      print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:batch_third",
                   batch, self.debug_mode)
       num_input_ids = batch['input_ids'].shape[1]
       print_debug(my_print, "LLAMAmodel:_forecast_with_tokens:num_input_ids",
