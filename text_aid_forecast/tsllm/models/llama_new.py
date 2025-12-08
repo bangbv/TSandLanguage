@@ -304,8 +304,11 @@ class LLAMAmodel(torch.nn.Module):
                     type(outputs), self.debug_mode)
         logits = outputs.logits  # [batch_size, seq_len, vocab_size]
         print_debug(my_print,
-                    "LLAMAmodel:_forecast_with_embeddings:logits shape:",
+                    "LLAMAmodel:_forecast_with_embeddings:logits_shape:",
                     logits.shape, self.debug_mode)
+        print_debug(my_print,
+                    "LLAMAmodel:_forecast_with_embeddings:logits:",
+                    logits, self.debug_mode)
         # Sample from the distribution
         generation_ids = self._sample_from_embeddings(logits, steps, temp, top_p,
                                                    settings, tokenizer)
@@ -405,6 +408,7 @@ class LLAMAmodel(torch.nn.Module):
       token_id_test_first = token_id_test[0]
       print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test_first",
                   token_id_test_first, self.debug_mode)
+      token_id_test_first = ''
       input_str_output_test = tokenizer.decode(token_id_test_first)
       print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
                   input_str_output_test, self.debug_mode)
