@@ -263,21 +263,21 @@ class LLAMAmodel(torch.nn.Module):
                                                     cache_model=cache_model)
 
     if self.debug_mode:
-      input_str_test = '989'
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_test",
+      input_str_test = '989, 957, 970'
+      print_debug(my_print, "LLAMAmodel:forecast_with_embeddings:input_str_test",
                   input_str_test, self.debug_mode)
       token_dic_test = tokenizer([input_str_test],
                   return_tensors="pt",)
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_dic_test",
+      print_debug(my_print, "LLAMAmodel:forecast_with_embeddings:token_dic_test",
                   token_dic_test, self.debug_mode)
       token_id_test = token_dic_test['input_ids']
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test",
+      print_debug(my_print, "LLAMAmodel:forecast_with_embeddings:token_id_test",
                   token_id_test, self.debug_mode)
       token_id_test_first = token_id_test[0]
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test_first",
+      print_debug(my_print, "LLAMAmodel:forecast_with_embeddings:token_id_test_first",
                   token_id_test_first, self.debug_mode)
       input_str_output_test = tokenizer.decode(token_id_test_first)
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
+      print_debug(my_print, "LLAMAmodel:forecast_with_embeddings:input_str_output_test",
                   input_str_output_test, self.debug_mode)
 
     # Calculate num_input_ids for later use
@@ -398,17 +398,18 @@ class LLAMAmodel(torch.nn.Module):
     probs = F.softmax(last_logits, dim=-1)
     print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:probs:", probs,
                 self.debug_mode)
-    sampled_tokens = torch.multinomial(probs, num_samples=3)  # [batch_size, 1]
+    sampled_tokens = torch.multinomial(probs, num_samples=4)  # [batch_size, 1]
     print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:sampled_tokens",sampled_tokens, self.debug_mode)
     # Convert to strings (this is a simplified approach)
     # In practice, you'd want more sophisticated conversion from tokens to time series values
     for i in range(batch_size):
-      token_id = sampled_tokens[i].item()
-      print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:token_id",
-                  token_id, self.debug_mode)
+      token_id_arr = sampled_tokens[i]
+      # token_id = [] length 4
+      print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:token_id_arr",
+                  token_id_arr, self.debug_mode)
       # Convert token back to numerical value (simplified)
       # This would need proper implementation based on your tokenizer
-      pred_str = self._convert_token_to_timeseries_value(token_id, tokenizer,
+      pred_str = self._convert_token_to_timeseries_value(token_id_arr, tokenizer,
                                                          steps, settings)
       print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:pred_str",
                   pred_str, self.debug_mode)
@@ -416,13 +417,17 @@ class LLAMAmodel(torch.nn.Module):
 
     return pred_strs
 
-  def _convert_token_to_timeseries_value(self, token_id, tokenizer, steps,
+  def _convert_token_to_timeseries_value(self, token_id_arr, tokenizer, steps,
       settings):
     print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id",
-                token_id, self.debug_mode)
+                token_id_arr, self.debug_mode)
     """Convert sampled token back to time series format."""
     # Simplified conversion - in practice, you'd need proper reverse engineering
     # of your serialization format
+    token_id_strs = [str(num) for num in token_id_arr]
+    token_str = tokenizer.decode([token_id_strs])
+    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_str",
+                token_str, self.debug_mode)
 
     # For now, if token_str contains digits, extract them; otherwise return placeholder
     try:
