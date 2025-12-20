@@ -406,7 +406,7 @@ class LLAMAmodel(torch.nn.Module):
     # Simplified conversion - in practice, you'd need proper reverse engineering
     # of your serialization format
     if self.debug_mode:
-      input_str_test = '989'
+      input_str_test = '989, 957, 970'
       print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_test",
                   input_str_test, self.debug_mode)
       token_dic_test = tokenizer([input_str_test],
@@ -419,12 +419,7 @@ class LLAMAmodel(torch.nn.Module):
       token_id_test_first = token_id_test[0]
       print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test_first",
                   token_id_test_first, self.debug_mode)
-      token_id_test_first = ''
       input_str_output_test = tokenizer.decode(token_id_test_first)
-      input_ids_test = token_dic_test['input_ids']
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_ids_test",
-                  input_ids_test, self.debug_mode)
-      input_str_output_test = tokenizer.decode(input_ids_test[0])
       print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
                   input_str_output_test, self.debug_mode)
     token_str = tokenizer.decode([str(token_id)])
