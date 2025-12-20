@@ -422,15 +422,7 @@ class LLAMAmodel(torch.nn.Module):
     print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_arr",
                 token_id_arr, self.debug_mode)
     """Convert sampled token back to time series format."""
-    # Simplified conversion - in practice, you'd need proper reverse engineering
-    # of your serialization format
-    token_id_arr = token_id_arr.cpu().numpy()
-    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_arr:cpu",
-                token_id_arr, self.debug_mode)
-    token_id_strs = [str(num) for num in token_id_arr]
-    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_strs",
-                token_id_arr, self.debug_mode)
-    token_str = tokenizer.decode([token_id_strs])
+    token_str = tokenizer.decode(token_id_arr)
     print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_str",
                 token_str, self.debug_mode)
 
