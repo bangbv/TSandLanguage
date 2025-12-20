@@ -262,6 +262,24 @@ class LLAMAmodel(torch.nn.Module):
     model, tokenizer = self.get_model_and_tokenizer(model_name,
                                                     cache_model=cache_model)
 
+    if self.debug_mode:
+      input_str_test = '989'
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_test",
+                  input_str_test, self.debug_mode)
+      token_dic_test = tokenizer([input_str_test],
+                  return_tensors="pt",)
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_dic_test",
+                  token_dic_test, self.debug_mode)
+      token_id_test = token_dic_test['input_ids']
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test",
+                  token_id_test, self.debug_mode)
+      token_id_test_first = token_id_test[0]
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test_first",
+                  token_id_test_first, self.debug_mode)
+      input_str_output_test = tokenizer.decode(token_id_test_first)
+      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
+                  input_str_output_test, self.debug_mode)
+
     # Calculate num_input_ids for later use
     input_tokens = tokenizer([input_str], return_tensors="pt")['input_ids']
     num_input_ids = input_tokens.shape[1]
@@ -405,26 +423,6 @@ class LLAMAmodel(torch.nn.Module):
     """Convert sampled token back to time series format."""
     # Simplified conversion - in practice, you'd need proper reverse engineering
     # of your serialization format
-    if self.debug_mode:
-      input_str_test = '989, 957, 970'
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_test",
-                  input_str_test, self.debug_mode)
-      token_dic_test = tokenizer([input_str_test],
-                  return_tensors="pt",)
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_dic_test",
-                  token_dic_test, self.debug_mode)
-      token_id_test = token_dic_test['input_ids']
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test",
-                  token_id_test, self.debug_mode)
-      token_id_test_first = token_id_test[0]
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_id_test_first",
-                  token_id_test_first, self.debug_mode)
-      input_str_output_test = tokenizer.decode(token_id_test_first)
-      print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:input_str_output_test",
-                  input_str_output_test, self.debug_mode)
-    token_str = tokenizer.decode([str(token_id)])
-    print_debug(my_print, "LLAMAmodel:_convert_token_to_timeseries_value:token_str",
-                token_str, self.debug_mode)
 
     # For now, if token_str contains digits, extract them; otherwise return placeholder
     try:
