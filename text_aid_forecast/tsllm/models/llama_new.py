@@ -398,7 +398,7 @@ class LLAMAmodel(torch.nn.Module):
     probs = F.softmax(last_logits, dim=-1)
     print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:probs:", probs,
                 self.debug_mode)
-    sampled_tokens = torch.multinomial(probs, num_samples=4)  # [batch_size, 1]
+    sampled_tokens = torch.multinomial(probs, num_samples=5)  # [batch_size, 5]
     print_debug(my_print, "LLAMAmodel:_sample_from_embeddings:sampled_tokens",sampled_tokens, self.debug_mode)
     # Convert to strings (this is a simplified approach)
     # In practice, you'd want more sophisticated conversion from tokens to time series values
